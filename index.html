@@ -1,16 +1,90 @@
 <!DOCTYPE html>
-<html>
-      <head> <title> Escapismo </title> 
-     <style>
-     body { background-color: black; 
-          font-family: sans-serif; } 
-     header { text-align: center; }
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nerume</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+/*todo texto con fuente pixel art retro*/
+    html {
+        background: #8fe4ff;
+    }
+    body {
+        font-family: 'Press Start 2P', cursive;
+        color: #eefbff;
+        text-align: center;
+        padding: 20px;
+        text-shadow: 3px 3px 0 #185d56;
+    }
+    h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        letter-spacing: 4px;
+        text-transform: lowercase;
+        animation: float 2s ease-in-out infinite;
+        filter: drop-shadow(0 6px 0 #2a6f8d);
+    }
 
-          
-     </style></head>
+    .panel {
+        background-color: #73e3ff;
+        border: 3px solid #fff;
+        padding: 20px;
+        margin: 10px auto;
+        width: 300px;
+        box-shadow: 0 0 0 3px #8cd8f7, 8px 8px 0 #3e575e;
+    }
+
+    .btn {
+        background: linear-gradient(180deg, #baf0ff 0%, #73e3ff 100%);
+        color: #fff;
+        border: 3px solid #fff;
+        padding: 12px 20px;
+        font-family: 'Press Start 2P';
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 0 0 3px #8ad1ef, 5px 5px 0 #3e575e;
+        transition: transform 0.15s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+.card {
+    background-color: #8be8ff;
+    border: 3px solid #ffff;
+    padding: 15px;
+    margin: 10px;
+}
+
+.contenedor {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+</style>
+</head>
 <body>
-     <header><h1>ESCAPISMO</h1>
-     <h3>bienvenidos a mi lugar seguro</h3></header>
-     <main><article><p>la amo</p></article></main>
+    <h1>nerume</h1>
+    <button class="btn" align="left">quien soy</button>
+    <button class="btn" align="center">proyectos</button> <br>
 </body>
+
+
+<script>
+    const btn = document.querySelector('.btn');
+    const btnchat = document.querySelector('.btnchat');
+    const btntree = document.querySelector('.btntree');
+
+    btn.addEventListener('click', () => {
+        window.location.href = 'proyectos.html';
+    });
+
+    btnquiensoy.addEventListener('click', () => {
+        window.location.href = 'quien-soy.html';
+    });
+</script>
 </html>
