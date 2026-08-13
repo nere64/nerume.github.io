@@ -69,22 +69,18 @@
 </head>
 <body>
     <h1>nerume</h1>
-    <button class="btn" align="left">quien soy</button>
+    <button class="btn" align="left">yo</button>
     <button class="btn" align="center">proyectos</button> <br>
 </body>
 
-
 <script>
-    const btn = document.querySelector('.btn');
-    const btnchat = document.querySelector('.btnchat');
-    const btntree = document.querySelector('.btntree');
+    const buttons = document.querySelectorAll('.btn');
 
-    btn.addEventListener('click', () => {
-        window.location.href = 'proyectos.html';
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const buttonText = button.textContent.toLowerCase();
+            window.location.href = `${buttonText}.html`;
+        });
     });
-
-    btnquiensoy.addEventListener('click', () => {
-        window.location.href = 'quien-soy.html';
-    });
-</script>
+</script>   
 </html>
