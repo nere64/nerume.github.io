@@ -7,9 +7,11 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-/*todo texto con fuente pixel art retro*/
     html {
         background: #8fe4ff;
+        background: linear-gradient(135deg, #8fe4ff 0%, #73e3ff 100%);
+        height: 100%;
+        margin: 0;
     }
     body {
         font-family: 'Press Start 2P', cursive;
@@ -18,6 +20,17 @@
         padding: 20px;
         text-shadow: 3px 3px 0 #185d56;
     }
+    .palabrasyippebucle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 48px;
+        letter-spacing: 4px;
+        text-transform: lowercase;
+        animation: float 2s ease-in-out infinite;
+        filter: drop-shadow(0 6px 0 #2a6f8d);
+}    
     h1 {
         font-size: 48px;
         margin-bottom: 20px;
@@ -69,8 +82,9 @@
 </head>
 <body>
     <h1>nerume</h1>
+    <image src="yippee.gif" alt="yo" width="100" height="100"> <br>
     <button class="btn" align="left">yo</button>
-    <button class="btn" align="center">proyectos</button> <br>
+    <button class="btn" align="center">proyectos</button>
 </body>
 
 <script>
