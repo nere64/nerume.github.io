@@ -78,12 +78,25 @@
 			text-align: center;
 		}
 
+		.entradas {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+			gap: 18px;
+		}
+
+		.entrada {
+			margin: 0;
+			padding: 10px;
+			border: 2px solid #77746f;
+			background: #1d1815;
+			animation: aparecer 0.7s ease-out;
+		}
+
 		.foto {
 			aspect-ratio: 1 / 1;
 			overflow: hidden;
 			border: 2px solid #77746f;
-			background: #1d1815;
-			animation: aparecer 0.7s ease-out;
+			background: #2e2622;
 		}
 
 		.foto img {
@@ -93,14 +106,26 @@
 			object-fit: cover;
 		}
 
-		.controles {
-			display: flex;
-			justify-content: space-between;
-			gap: 10px;
-			margin-top: 14px;
+		.entrada a {
+			display: block;
+			color: inherit;
 		}
 
-		button {
+		.entrada p {
+			margin: 10px 0 0;
+			color: #cccec7;
+			font-size: 1.3rem;
+			line-height: 1.1;
+		}
+
+		.vacio {
+			margin: 0;
+			color: #a09f97;
+			font-size: 1.3rem;
+			text-align: center;
+		}
+
+		.volver {
 			padding: 8px 16px;
 			background: #1d1815;
 			border: 2px solid #77746f;
@@ -108,15 +133,12 @@
 			font: inherit;
 			font-size: 1.3rem;
 			cursor: pointer;
+			margin-top: 18px;
 		}
 
-		button:hover {
+		.volver:hover {
 			background: #cccec7;
 			color: #1d1815;
-		}
-
-		.volver {
-			margin-top: 18px;
 		}
 
 		@keyframes aparecer {
@@ -152,42 +174,36 @@
 
 		<h1>FOTOS</h1>
 
-		<div class="foto">
-			<img id="imagen" src="https://picsum.photos/seed/nerus-01/800/800" alt="Foto de Nerus">
-		</div>
-
-		<div class="controles">
-			<button id="anterior" type="button">&lt; anterior</button>
-			<button id="siguiente" type="button">siguiente &gt;</button>
-		</div>
+		<div id="entradas" class="entradas"></div>
 
 		<button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
 	</main>
 
 	<script>
-		const fotos = [
-			'https://picsum.photos/seed/nerus-01/800/800',
-			'https://picsum.photos/seed/nerus-02/800/800',
-			'https://picsum.photos/seed/nerus-03/800/800'
+		const entradas = [
+			{
+				imagen: "https://i.imgur.com/dXpSruT.jpeg",
+				texto: "b r a i n"
+			}
 		];
-		let posicion = 0;
-		const imagen = document.querySelector('#imagen');
+		const contenedor = document.querySelector('#entradas');
 		const contador = document.querySelector('.barra span:last-child');
 
-		function mostrarFoto() {
-			imagen.src = fotos[posicion];
-			contador.textContent = `0${posicion + 1}/${fotos.length}`;
+		entradas.forEach((entrada, posicion) => {
+			const apartado = document.createElement('section');
+			apartado.className = 'entrada';
+			apartado.innerHTML = `
+				<div class="foto"><img src="${entrada.imagen}" alt="${entrada.texto}"></div>
+				<p>${entrada.texto}</p>
+			`;
+			contenedor.appendChild(apartado);
+			contador.textContent = `${String(posicion + 1).padStart(2, '0')}/${entradas.length}`;
+		});
+
+		if (entradas.length === 0) {
+			contenedor.innerHTML = '<p class="vacio">todavia no hay fotos</p>';
+			contador.textContent = '00/00';
 		}
-
-		document.querySelector('#anterior').addEventListener('click', () => {
-			posicion = (posicion - 1 + fotos.length) % fotos.length;
-			mostrarFoto();
-		});
-
-		document.querySelector('#siguiente').addEventListener('click', () => {
-			posicion = (posicion + 1) % fotos.length;
-			mostrarFoto();
-		});
 	</script>
 </body>
 </html>
