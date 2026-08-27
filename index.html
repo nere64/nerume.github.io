@@ -79,8 +79,8 @@
         }
         .sas {
             position: fixed;
-            right: 24px;
-            bottom: 24px;
+            right: max(0px, env(safe-area-inset-right));
+            bottom: max(24px, env(safe-area-inset-bottom));
             z-index: 4;
             animation: aparecer-boton 0.7s ease-out both;
         }
@@ -238,13 +238,14 @@
         }
 
     .button-delado {
-        position: absolute;
-        right: -30px;
-        bottom: 20px;
+        position: static;
         transform: rotate(-1deg);
         transform-origin: center;
         z-index: 1;
         width: max-content;
+        max-width: min(80vw, 260px);
+        box-sizing: border-box;
+        white-space: normal;
         justify-self: start;
     }
 
