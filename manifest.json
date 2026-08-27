@@ -1,0 +1,17 @@
+{
+  "name": "Nerume",
+  "short_name": "Nerume",
+    "description": "Blog personal de sam.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1d1815",
+  "theme_color": "#1d1815",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "any"
+    }
+  ]
+}
