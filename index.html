@@ -86,6 +86,18 @@
             font-weight: normal;
             text-shadow: 4px 4px 0 #171311;
         }
+
+    .titulo-con-icono {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25em;
+        }
+
+    .titulo-con-icono img {
+            width: 0.65em;
+            height: 0.65em;
+            object-fit: contain;
+        }
     p.q {
             margin: 0;
             color: #a09f97;
@@ -224,18 +236,18 @@
         </nav>
 
         <section id="noche" class="apartado">
-            <h2>DE LA NOCHE ESTRESADA</h2>
+            <h2 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">DE LA NOCHE ESTRESADA</h2>
             <p id="noche-info" class="info-text">La noche estresada son pensamientos y desahogo de mi dia a dia los cuales son borrados luego de cierto tiempo</p>
             <button class="info-button" type="button" data-info="noche-info" aria-label="Informacion sobre la noche estresada">?</button>
         </section>
 
         <section id="sobre-mi" class="apartado">
-            <h2>SOBRE MI</h2>
+            <h2 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">SOBRE MI</h2>
             <p>hola soy sam, una chica que anda aprendiendo html y ha decidido escribir sus pensamientos y cositas tontas en una pagina jsjsjs</p>
         </section>
 
         <section id="proyectos" class="apartado">
-            <h2>PROYECTOS</h2>
+            <h2 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">PROYECTOS</h2>
             <button class="mini-button" type="button">Nerus</button>
         </section>
         </main>

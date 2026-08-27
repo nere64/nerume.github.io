@@ -66,6 +66,18 @@
             z-index: 1;
         }
 
+    .titulo-con-icono {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25em;
+        }
+
+    .titulo-con-icono img {
+            width: 0.65em;
+            height: 0.65em;
+            object-fit: contain;
+        }
+
     @keyframes ruido {
             0% { background-position: 0 0; }
             50% { background-position: 12px -8px; }
@@ -75,7 +87,7 @@
 </head>
 <body>
     <header>
-        <h1>NERUME - nerus
+        <h1 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">NERUME - nerus
         </h1>
         <p>
             aqui va un libro a futuro

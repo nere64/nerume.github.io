@@ -81,6 +81,18 @@
 			text-align: center;
 		}
 
+		.titulo-con-icono {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.25em;
+		}
+
+		.titulo-con-icono img {
+			width: 0.65em;
+			height: 0.65em;
+			object-fit: contain;
+		}
+
 		.entradas {
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -175,7 +187,7 @@
 			<span>[01/03]</span>
 		</div>
 
-		<h1>FOTOS</h1>
+		<h1 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">FOTOS</h1>
 
 		<div id="entradas" class="entradas"></div>
 
