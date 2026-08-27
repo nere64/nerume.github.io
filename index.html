@@ -78,9 +78,9 @@
             animation: aparecer 0.7s ease-out;
         }
         .sas {
-            position: fixed;
-            right: max(12px, env(safe-area-inset-right));
-            bottom: max(24px, env(safe-area-inset-bottom));
+            position: absolute;
+            right: -12px;
+            bottom: -24px;
             z-index: 4;
             animation: aparecer-boton 0.7s ease-out both;
         }
@@ -289,11 +289,11 @@
             <button class="mini-button" type="button">arte</button>
         </section>
         </main>
-    </div>
     <div class="sas">
 <button id="texto-cambiante" class="button-delado" type="button">
     yippie
 </button>
+    </div>
     </div>
     <script>
         const textos = [
