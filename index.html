@@ -1,100 +1,276 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nerume</title>
-    <link rel="icon" type="image/png" href="yippe.png">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Nerume - Un blog mas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
-    html {
-        background: #8fe4ff;
-        background: linear-gradient(135deg, #8fe4ff 0%, #73e3ff 100%);
-        height: 100%;
-        margin: 0;
-    }
     body {
-        font-family: 'Press Start 2P', cursive;
-        color: #eefbff;
-        text-align: center;
-        padding: 20px;
-        text-shadow: 3px 3px 0 #185d56;
-    }
-    .palabrasyippebucle {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 48px;
-        letter-spacing: 4px;
-        text-transform: lowercase;
-        animation: float 2s ease-in-out infinite;
-        filter: drop-shadow(0 6px 0 #2a6f8d);
-}    
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 24px;
+            display: grid;
+            place-items: center;
+            background-color: #1d1815;
+            position: relative;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(204, 206, 199, 0.03) 0,
+                rgba(204, 206, 199, 0.03) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            color: #a09f97;
+            font-family: 'VT323', monospace;
+        }
+
+    body::before,
+    body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+    body::before {
+            z-index: 2;
+            background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(204, 206, 199, 0.08) 3px 4px);
+            mix-blend-mode: screen;
+        }
+
+    body::after {
+            z-index: 3;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+            animation: ruido 0.18s steps(2) infinite;
+        }
+
+    @keyframes ruido {
+            0% { background-position: 0 0; }
+            50% { background-position: 12px -8px; }
+            100% { background-position: -8px 10px; }
+        }
+
+    .pantala {
+            width: 90%;
+            max-width: 720px;
+            padding: 38px 30px 42px;
+            background-color: #2e2622;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(204, 206, 199, 0.03) 0,
+                rgba(204, 206, 199, 0.03) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            border: 2px solid #77746f;
+            box-shadow: 8px 8px 0 #171311;
+            position: relative;
+            z-index: 1;
+            animation: aparecer 0.7s ease-out;
+        }
+
     h1 {
-        font-size: 48px;
-        margin-bottom: 20px;
-        letter-spacing: 4px;
-        text-transform: lowercase;
-        animation: float 2s ease-in-out infinite;
-        filter: drop-shadow(0 6px 0 #2a6f8d);
+            color: #a09f97;
+            margin: 0;
+            font-size: clamp(4rem, 14vw, 7rem);
+            line-height: 0.9;
+            font-weight: normal;
+            text-shadow: 4px 4px 0 #171311;
+        }
+    p.q {
+            margin: 0;
+            color: #a09f97;
+            font-size: 1.33rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+    p {
+            margin: 0;
+            color: #a09f97;
+            font-size: 1.25rem;
+            line-height: 1.5;
+            text-align: center;
+        }
+    header {
+            width: min(100%, 900px);
+            margin: 0 auto 2rem;
+            padding-top: 3rem;
+            text-align: center;
+        }
+        main {
+            width: 100%;
+            margin: 0 auto;
+            padding-bottom: 3rem;
+            text-align: center;
+        }
+
+    .menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+    button {
+            width: 100%;
+            text-align: center;
+            padding: 8px 4px;
+            margin: 0;
+            background-color: #2e2622;
+            color: #a09f97;
+            border: 2px solid #77746f;
+            box-shadow: 4px 4px 0 #171311;
+            font-family: 'VT323', monospace;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }  
+
+    .menu button {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+        }
+
+    .info-button {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            width: auto;
+            margin: 0;
+            padding: 0.2rem 0.6rem;
+            font-size: 1.2rem;
+        }
+
+    .apartado {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            border: 0 solid #77746f;
+            text-align: left;
+            position: relative;
+            transition: max-height 0.7s ease-in-out, opacity 0.6s ease-in-out, margin 0.7s ease-in-out, padding 0.7s ease-in-out, border-width 0.7s ease-in-out;
+        }
+
+    .apartado.abierto {
+            max-height: 300px;
+            opacity: 1;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-width: 2px;
+        }
+
+    .apartado h2 {
+            margin: 0 0 1rem;
+            color: #cccec7;
+            font-size: 2rem;
+            font-weight: normal;
+        }
+
+    .apartado p {
+            margin: 0;
+            text-align: left;
+        }
+
+    .info-text {
+            display: none;
+            margin-top: 1rem !important;
+            padding-right: 3rem;
+        }
+
+    .info-text.visible {
+            display: block;
+        }
+
+    @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    @media (max-width: 520px) {
+        .menu {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
-    .panel {
-        background-color: #73e3ff;
-        border: 3px solid #fff;
-        padding: 20px;
-        margin: 10px auto;
-        width: 300px;
-        box-shadow: 0 0 0 3px #8cd8f7, 8px 8px 0 #3e575e;
-    }
-
-    .btn {
-        background: linear-gradient(180deg, #baf0ff 0%, #73e3ff 100%);
-        color: #fff;
-        border: 3px solid #fff;
-        padding: 12px 20px;
-        font-family: 'Press Start 2P';
-        font-size: 18px;
-        cursor: pointer;
-        box-shadow: 0 0 0 3px #8ad1ef, 5px 5px 0 #3e575e;
-        transition: transform 0.15s ease;
-    }
-
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-
-.card {
-    background-color: #8be8ff;
-    border: 3px solid #ffff;
-    padding: 15px;
-    margin: 10px;
-}
-
-.contenedor {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
 </style>
 </head>
 <body>
-    <h1>nerume</h1>
-    <image src="yippee.gif" alt="yo" width="100" height="100"> <br>
-    <button class="btn" align="left">yo</button>
-    <button class="btn" align="center">proyectos</button>
-</body>
+    <div class="pantala">
+        <header>
+            <h1 class="title">NERUME</h1>
+        </header>
+        <main>
+        <nav class="menu" aria-label="Navegacion principal">
+            <button type="button" data-apartado="noche">la noche estresada</button>
+            <button type="button" data-apartado="sobre-mi">sobre mi</button>
+            <button class="blog-button" type="button">imagenes tontas</button>
+            <button type="button" data-apartado="proyectos">proyectos</button>
+        </nav>
 
-<script>
-    const buttons = document.querySelectorAll('.btn');
+        <section id="noche" class="apartado">
+            <h2>DE LA NOCHE ESTRESADA</h2>
+            <p id="noche-info" class="info-text">La noche estresada son pensamientos y desahogo de mi dia a dia los cuales son borrados luego de cierto tiempo</p>
+            <button class="info-button" type="button" data-info="noche-info" aria-label="Informacion sobre la noche estresada">?</button>
+        </section>
 
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            const buttonText = button.textContent.toLowerCase();
-            window.location.href = `${buttonText}.html`;
+        <section id="sobre-mi" class="apartado">
+            <h2>SOBRE MI</h2>
+            <p>hola soy sam, una chica que anda aprendiendo html y ha decidido escribir sus pensamientos y cositas tontas en una pagina jsjsjs</p>
+        </section>
+
+        <section id="proyectos" class="apartado">
+            <h2>PROYECTOS</h2>
+            <button class="mini-button" type="button">Nerus</button>
+        </section>
+        </main>
+    </div>
+    <script>
+        const botones = document.querySelectorAll('button[data-apartado], button[data-info]');
+
+        botones.forEach((boton) => {
+            boton.addEventListener('click', () => {
+                if (boton.dataset.info) {
+                    document.getElementById(boton.dataset.info).classList.toggle('visible');
+                    return;
+                }
+
+                const apartado = document.getElementById(boton.dataset.apartado);
+                const yaEstaAbierto = apartado.classList.contains('abierto');
+
+                document.querySelectorAll('.apartado').forEach((caja) => {
+                    caja.classList.remove('abierto');
+                });
+
+                if (!yaEstaAbierto) {
+                    apartado.classList.add('abierto');
+                }
+            });
         });
-    });
-</script>   
+
+        const miniButtons = document.querySelectorAll('.mini-button');
+
+        miniButtons.forEach((boton) => {
+            boton.addEventListener('click', () => {
+                const nombrePagina = boton.textContent.trim() + '.html';
+                window.location.href = nombrePagina;
+            });
+        });
+
+        document.querySelector('.blog-button').addEventListener('click', () => {
+            window.location.href = 'blog.html';
+        });
+
+    </script>
+</body>
 </html>

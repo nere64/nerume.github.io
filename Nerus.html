@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nerume - neru</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+    body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 24px;
+            background-color: #1d1815;
+            position: relative;
+            background-image: repeating-linear-gradient(
+                0deg,
+                rgba(204, 206, 199, 0.03) 0,
+                rgba(204, 206, 199, 0.03) 1px,
+                transparent 1px,
+                transparent 5px
+            );
+            color: #a09f97;
+            font-family: 'VT323', monospace;
+        }
+
+    body::before,
+    body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+    body::before {
+            z-index: 2;
+            background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(204, 206, 199, 0.08) 3px 4px);
+            mix-blend-mode: screen;
+        }
+
+    body::after {
+            z-index: 3;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+            animation: ruido 0.18s steps(2) infinite;
+        }
+
+    h1 {
+            color: #a09f97;
+            margin: 0;
+            font-size: 3rem;
+            line-height: 0.9;
+            font-weight: normal;
+            text-shadow: 4px 4px 0 #171311;
+        }
+
+    header {
+            padding-top: 24px;
+            text-align: left;
+            position: relative;
+            z-index: 1;
+        }
+
+    @keyframes ruido {
+            0% { background-position: 0 0; }
+            50% { background-position: 12px -8px; }
+            100% { background-position: -8px 10px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>NERUME - nerus
+        </h1>
+        <p>
+            aqui va un libro a futuro
+        </p>
+    </header>
+</body>
+</html>
