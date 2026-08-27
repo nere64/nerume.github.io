@@ -77,7 +77,13 @@
             z-index: 1;
             animation: aparecer 0.7s ease-out;
         }
-
+        .sas {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 4;
+            animation: aparecer-boton 0.7s ease-out both;
+        }
     h1 {
             color: #a09f97;
             margin: 0;
@@ -220,7 +226,34 @@
             }
         }
 
+    @keyframes aparecer-boton {
+            from {
+                opacity: 0;
+                transform: translateY(12px) rotate(-8deg);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) rotate(-8deg);
+            }
+        }
 
+    .button-delado {
+        position: absolute;
+        right: -30px;
+        bottom: 20px;
+        transform: rotate(-1deg);
+        transform-origin: center;
+        z-index: 1;
+        width: max-content;
+        justify-self: start;
+    }
+
+    .button-delado:hover,
+    .button-delado:focus-visible {
+        transform: rotate(-8deg) translateY(-2px);
+    }
+    
+    
 </style>
 </head>
 <body>
@@ -241,7 +274,7 @@
             <h2 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">DE LA NOCHE ESTRESADA</h2>
             <p>como odio que me asusten, aunque sea de broma no es agradable</p>
             <p id="noche-info" class="info-text">La noche estresada son pensamientos y desahogo de mi dia a dia los cuales son borrados luego de cierto tiempo.</p>
-            <button class="info-button" type="button" data-info="noche-info" aria-label="Informacion sobre la noche estresada">?</button>
+            <button class="info-button button-delado" type="button" data-info="noche-info" aria-label="Informacion sobre la noche estresada">?</button>
         </section>
 
         <section id="sobre-mi" class="apartado">
@@ -256,7 +289,33 @@
         </section>
         </main>
     </div>
+    <div class="sas">
+<button id="texto-cambiante" class="button-delado" type="button">
+    yippie
+</button>
+    </div>
     <script>
+        const textos = [
+    'hola jeje',
+    'yipieee!!11!11!11!!',
+    'sparkus de mrd',
+    'YIPPIEEEE!!!',
+    'limon la fukin chad',
+    'arbelcoin zzz yippiecoins god',
+    'gracias por checar este blog tonto'
+];
+
+        const botonCambiante = document.getElementById('texto-cambiante');
+        let indiceTexto = Math.floor(Math.random() * textos.length);
+
+        const cambiarTexto = () => {
+            indiceTexto = (indiceTexto + 1) % textos.length;
+            botonCambiante.textContent = textos[indiceTexto];
+        };
+
+        botonCambiante.textContent = textos[indiceTexto];
+        setInterval(cambiarTexto, 5000);
+
         document.addEventListener('click', (evento) => {
             const boton = evento.target.closest('button');
             if (!boton) return;
@@ -287,7 +346,7 @@
 
             if (!yaEstaAbierto) apartado.classList.add('abierto');
         });
-
+        
     </script>
 </body>
 </html>
