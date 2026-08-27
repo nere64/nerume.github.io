@@ -204,18 +204,15 @@
 		const contenedor = document.querySelector('#entradas');
 		const contador = document.querySelector('.barra span:last-child');
 
-		entradas.forEach((entrada, posicion) => {
-			const apartado = document.createElement('section');
-			apartado.className = 'entrada';
-			apartado.innerHTML = `
+		if (entradas.length > 0) {
+			contenedor.innerHTML = entradas.map((entrada) => `
+				<section class="entrada">
 				<div class="foto"><img src="${entrada.imagen}" alt="${entrada.texto}"></div>
 				<p>${entrada.texto}</p>
-			`;
-			contenedor.appendChild(apartado);
-			contador.textContent = `${String(posicion + 1).padStart(2, '0')}/${entradas.length}`;
-		});
-
-		if (entradas.length === 0) {
+				</section>
+			`).join('');
+			contador.textContent = `01/${entradas.length}`;
+		} else {
 			contenedor.innerHTML = '<p class="vacio">todavia no hay fotos</p>';
 			contador.textContent = '00/00';
 		}

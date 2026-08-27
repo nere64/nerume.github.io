@@ -98,13 +98,6 @@
             height: 0.65em;
             object-fit: contain;
         }
-    p.q {
-            margin: 0;
-            color: #a09f97;
-            font-size: 1.33rem;
-            line-height: 1.5;
-            text-align: center;
-        }
     p {
             margin: 0;
             color: #a09f97;
@@ -220,12 +213,6 @@
             }
         }
 
-    @media (max-width: 520px) {
-        .menu {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
 </style>
 </head>
 <body>
@@ -260,39 +247,35 @@
         </main>
     </div>
     <script>
-        const botones = document.querySelectorAll('button[data-apartado], button[data-info]');
+        document.addEventListener('click', (evento) => {
+            const boton = evento.target.closest('button');
+            if (!boton) return;
 
-        botones.forEach((boton) => {
-            boton.addEventListener('click', () => {
-                if (boton.dataset.info) {
-                    document.getElementById(boton.dataset.info).classList.toggle('visible');
-                    return;
-                }
+            if (boton.classList.contains('blog-button')) {
+                window.location.href = 'blog.html';
+                return;
+            }
 
-                const apartado = document.getElementById(boton.dataset.apartado);
-                const yaEstaAbierto = apartado.classList.contains('abierto');
+            if (boton.classList.contains('mini-button')) {
+                window.location.href = `${boton.textContent.trim()}.html`;
+                return;
+            }
 
-                document.querySelectorAll('.apartado').forEach((caja) => {
-                    caja.classList.remove('abierto');
-                });
+            if (boton.dataset.info) {
+                document.getElementById(boton.dataset.info).classList.toggle('visible');
+                return;
+            }
 
-                if (!yaEstaAbierto) {
-                    apartado.classList.add('abierto');
-                }
+            if (!boton.dataset.apartado) return;
+
+            const apartado = document.getElementById(boton.dataset.apartado);
+            const yaEstaAbierto = apartado.classList.contains('abierto');
+
+            document.querySelectorAll('.apartado').forEach((caja) => {
+                caja.classList.remove('abierto');
             });
-        });
 
-        const miniButtons = document.querySelectorAll('.mini-button');
-
-        miniButtons.forEach((boton) => {
-            boton.addEventListener('click', () => {
-                const nombrePagina = boton.textContent.trim() + '.html';
-                window.location.href = nombrePagina;
-            });
-        });
-
-        document.querySelector('.blog-button').addEventListener('click', () => {
-            window.location.href = 'blog.html';
+            if (!yaEstaAbierto) apartado.classList.add('abierto');
         });
 
     </script>
