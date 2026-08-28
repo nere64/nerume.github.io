@@ -118,12 +118,17 @@
         }
 
     .comicizq,
-    .comicder {
+    .comicder,
+    .comic-ori {
             width: 100%;
-            aspect-ratio: 3 / 4;
             object-fit: cover;
             border: 0;
             background-color: transparent;
+        }
+
+    .comicizq,
+    .comicder {
+            aspect-ratio: 3 / 4;
         }
 
     .comicizq {
@@ -132,6 +137,11 @@
 
     .comicder {
             grid-column: 2;
+        }
+
+    .comic-ori {
+            grid-column: 1 / -1;
+            aspect-ratio: 2 / 1;
         }
 
     @media (max-width: 520px) {
@@ -193,6 +203,7 @@
         <div class="comic-grid">
             <img class="comicizq" data-orden="1" src="1.png" alt="Viñeta 1">
             <img class="comicder" data-orden="2" src="2.png" alt="Viñeta 2">
+            <img class="comic-ori" data-orden="3" src="3.png" alt="Viñeta horizontal 3">
         </div>
     </main>
     <div class="contador-visitas">
@@ -203,7 +214,7 @@
     <script>
         const historia = document.querySelector('#historia');
         const comicGrid = historia.querySelector('.comic-grid');
-        const vinetas = [...comicGrid.querySelectorAll('.comicizq, .comicder')];
+        const vinetas = [...comicGrid.querySelectorAll('.comicizq, .comicder, .comic-ori')];
 
         vinetas
             .sort((a, b) => Number(a.dataset.orden) - Number(b.dataset.orden))
