@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nerume - Noche estrellada</title>
+    <meta name="description" content="Comic vertical de Noche estrellada.">
+    <link rel="canonical" href="https://nerume.com/noche-estrellada.html">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --fondo: #171311;
+            --panel: #2e2622;
+            --sombra: #0d0b0a;
+            --texto: #a09f97;
+            --claro: #cccec7;
+            --borde: #77746f;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            background-color: var(--fondo);
+            color: var(--texto);
+            font-family: 'VT323', monospace;
+        }
+
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            z-index: 2;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0 3px,
+                rgba(204, 206, 199, 0.08) 3px 4px
+            );
+            mix-blend-mode: screen;
+        }
+
+        body::after {
+            z-index: 3;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+            animation: ruido 0.18s steps(2) infinite;
+        }
+
+        .visor {
+            width: min(100%, 960px);
+            margin: 0 auto;
+            padding: clamp(14px, 3vw, 28px);
+            background-color: var(--panel);
+            border: 2px solid var(--borde);
+            box-shadow: 8px 8px 0 var(--sombra);
+            position: relative;
+            z-index: 1;
+        }
+
+        .barra {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: clamp(14px, 3vw, 26px);
+            padding: 6px 10px;
+            border: 2px solid var(--borde);
+            color: var(--claro);
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+        }
+
+        h1 {
+            margin: 0 0 clamp(14px, 3vw, 24px);
+            color: var(--claro);
+            font-size: clamp(2rem, 7vw, 4.5rem);
+            font-weight: normal;
+            text-align: center;
+            text-shadow: 4px 4px 0 var(--sombra);
+        }
+
+        .comic-vertical {
+            display: block;
+            width: min(100%, 860px);
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .volver {
+            display: block;
+            width: max-content;
+            max-width: 100%;
+            margin: clamp(16px, 3vw, 28px) auto 0;
+            padding: 8px 16px;
+            background: var(--fondo);
+            border: 2px solid var(--borde);
+            color: var(--claro);
+            font: inherit;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .volver:hover,
+        .volver:focus-visible {
+            background: var(--claro);
+            color: var(--fondo);
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes ruido {
+            0% { background-position: 0 0; }
+            50% { background-position: 12px -8px; }
+            100% { background-position: -8px 10px; }
+        }
+
+        .visor {
+            animation: aparecer 0.7s ease-out;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 12px;
+            }
+
+            .visor {
+                box-shadow: 5px 5px 0 var(--sombra);
+            }
+
+            .barra {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="visor">
+        <div class="barra">
+            <span>noche estrellada:</span>
+            <span>comic</span>
+        </div>
+
+        <h1>NOCHE ESTRELLADA</h1>
+
+        <img class="comic-vertical" src="portada27.png" alt="Comic vertical de Noche estrellada">
+
+        <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
+    </main>
+</body>
+</html>
