@@ -392,7 +392,7 @@
 
         <section id="proyectos" class="apartado">
             <h2 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">PROYECTOS</h2>
-            <button class="mini-button" type="button">Nerus</button>
+            <button class="mini-button" type="button" data-pagina="la-noche-estresada.html">la noche estresada</button>
             <button class="mini-button" type="button">arte</button>
         </section>
         </main>
@@ -485,7 +485,7 @@
             }
 
             if (boton.classList.contains('mini-button')) {
-                window.location.href = `${boton.textContent.trim()}.html`;
+                window.location.href = boton.dataset.pagina || `${boton.textContent.trim()}.html`;
                 return;
             }
 
