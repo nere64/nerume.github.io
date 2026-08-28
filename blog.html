@@ -39,6 +39,15 @@
 			--borde: #66818a;
 		}
 
+		body[data-tema="rojo"] {
+			--fondo: #160606;
+			--panel: #3a0d0d;
+			--sombra: #080202;
+			--texto: #d08b8b;
+			--claro: #f0c1b8;
+			--borde: #a34b4b;
+		}
+
 		* {
 			box-sizing: border-box;
 		}
@@ -310,6 +319,23 @@
 		.tema-ciclico { background-color: #2e2622; }
 		body[data-tema="morado"] .tema-ciclico { background-color: #8d5bb5; }
 		body[data-tema="celeste"] .tema-ciclico { background-color: #5caebe; }
+		body[data-tema="rojo"] .tema-ciclico { background-color: #d83b3b; }
+
+		.contador-visitas {
+			position: fixed;
+			right: max(12px, env(safe-area-inset-right));
+			bottom: max(12px, env(safe-area-inset-bottom));
+			z-index: 5;
+			padding: 5px 12px;
+			background-color: var(--panel);
+			border: 2px solid var(--borde);
+			box-shadow: 4px 4px 0 var(--sombra);
+			color: var(--texto);
+			font-size: 1.15rem;
+			white-space: nowrap;
+		}
+
+		.contador-visitas strong { color: var(--claro); }
 	</style>
 </head>
 <body>
@@ -332,13 +358,32 @@
 
 		<button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
 	</main>
+	<div class="contador-visitas">
+		visitas: <strong id="numero-visitas">...</strong>
+		<script data-goatcounter="https://nere64.goatcounter.com/count"
+				async src="//gc.zgo.at/count.js"></script>
+	</div>
 	<nav class="selector-temas" aria-label="Elegir tema">
 		<button class="tema-ciclico" id="boton-tema" type="button" aria-label="Cambiar tema" title="Cambiar tema"></button>
 	</nav>
 
 	<script>
+		const numeroVisitas = document.querySelector('#numero-visitas');
+
+		fetch('https://nere64.goatcounter.com/counter//blog.html.json', { credentials: 'omit' })
+			.then((respuesta) => {
+				if (!respuesta.ok) throw new Error('No se pudo consultar el contador');
+				return respuesta.json();
+			})
+			.then((datos) => {
+				numeroVisitas.textContent = datos.count ?? '0';
+			})
+			.catch(() => {
+				numeroVisitas.textContent = '...';
+			});
+
 		const botonTema = document.querySelector('#boton-tema');
-		const temas = ['actual', 'morado', 'celeste'];
+		const temas = ['actual', 'morado', 'celeste', 'rojo'];
 		const temaGuardado = localStorage.getItem('tema-nerume');
 
 		if (temaGuardado && temaGuardado !== 'actual') {
