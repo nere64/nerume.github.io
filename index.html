@@ -6,8 +6,8 @@
     <title>Nerume - Un blog mas</title>
     <meta name="description" content="Blog personal de sam, una chica que anda aprendiendo html y ha decidido escribir sus pensamientos y cositas tontas en una pagina jsjs">
     <link rel="canonical" href="https://nerume.com/">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <link id="favicon" rel="icon" type="image/png" href="favicon.png">
+    <link id="apple-favicon" rel="apple-touch-icon" href="favicon.png">
     <meta property="og:title" content="Nerume - Un blog mas">
     <meta property="og:description" content="Blog personal de sam, una chica que anda aprendiendo html y ha decidido escribir sus pensamientos y cositas tontas en una pagina jsjs">
     <meta property="og:image" content="https://nerume.com/favicon.png">
@@ -460,6 +460,22 @@
             document.body.dataset.tema = temaGuardado;
         }
 
+        const favicon = document.querySelector('#favicon');
+        const appleFavicon = document.querySelector('#apple-favicon');
+        const iconosTema = {
+            actual: 'favicon.png',
+            morado: 'morado-favicon.png',
+            celeste: 'celeste-favicon.png',
+            rojo: 'rojo-favicon.png'
+        };
+
+        const actualizarFavicon = (tema) => {
+            favicon.href = iconosTema[tema];
+            appleFavicon.href = iconosTema[tema];
+        };
+
+        actualizarFavicon(temaGuardado || 'actual');
+
         botonTema.addEventListener('click', () => {
             const temaActual = document.body.dataset.tema || 'actual';
             const siguienteIndice = (temas.indexOf(temaActual) + 1) % temas.length;
@@ -468,11 +484,13 @@
             if (siguienteTema === 'actual') {
                 delete document.body.dataset.tema;
                 localStorage.removeItem('tema-nerume');
+                actualizarFavicon('actual');
                 return;
             }
 
             document.body.dataset.tema = siguienteTema;
             localStorage.setItem('tema-nerume', siguienteTema);
+            actualizarFavicon(siguienteTema);
         });
 
         document.addEventListener('click', (evento) => {
