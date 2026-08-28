@@ -73,6 +73,80 @@
             z-index: 1;
         }
 
+    p,
+    .texto-libro {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+    .favicon-portada {
+            position: absolute;
+            top: 8%;
+            right: 14%;
+            width: clamp(70px, 14vw, 124px);
+            height: auto;
+            transform: rotate(10deg);
+            z-index: 1;
+        }
+
+    .portada-con-icono {
+            position: relative;
+            display: block;
+            width: 100%;
+            margin: 1rem auto 0;
+        }
+
+    .imagen-portada {
+            display: block;
+            width: min(78vw, 500px);
+            height: auto;
+            margin: 0 auto;
+        }
+
+    .historia {
+            width: min(100%, 680px);
+            margin: 2rem auto;
+        }
+
+    .comic-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: clamp(0.75rem, 3vw, 1.5rem);
+            align-items: start;
+        }
+
+    .comicizq,
+    .comicder {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border: 0;
+            background-color: transparent;
+        }
+
+    .comicizq {
+            grid-column: 1;
+        }
+
+    .comicder {
+            grid-column: 2;
+        }
+
+    @media (max-width: 520px) {
+            body {
+                padding: 0 14px;
+            }
+
+            header {
+                padding-top: 28px;
+            }
+
+            .comic-grid {
+                gap: 0.6rem;
+            }
+        }
     .titulo-con-icono {
             display: inline-flex;
             align-items: center;
@@ -110,19 +184,31 @@
 </head>
 <body>
     <header>
-        <h1 class="titulo-con-icono"><img src="icono-al-lado-del-titulo.png" alt="">LA NOCHE ESTRESADA
-        </h1>
-        <p>
-            aqui va un libro a futuro
-        </p>
-        <img src="https://i.imgur.com/7j2ihvW.png" width="600" height="600">
+        <div class="portada-con-icono">
+            <img class="imagen-portada" src="https://i.imgur.com/7j2ihvW.png" alt="Portada de La noche estresada">
+            <img class="favicon-portada" src="pngicon.png" alt="">
+        </div>
     </header>
+    <main class="historia" id="historia">
+        <div class="comic-grid">
+            <img class="comicizq" data-orden="1" src="1.png" alt="Viñeta 1">
+            <img class="comicder" data-orden="2" src="2.png" alt="Viñeta 2">
+        </div>
+    </main>
     <div class="contador-visitas">
         visitas: <strong id="numero-visitas">...</strong>
         <script data-goatcounter="https://nere64.goatcounter.com/count"
                 async src="//gc.zgo.at/count.js"></script>
     </div>
     <script>
+        const historia = document.querySelector('#historia');
+        const comicGrid = historia.querySelector('.comic-grid');
+        const vinetas = [...comicGrid.querySelectorAll('.comicizq, .comicder')];
+
+        vinetas
+            .sort((a, b) => Number(a.dataset.orden) - Number(b.dataset.orden))
+            .forEach((vineta) => comicGrid.appendChild(vineta));
+
         const numeroVisitas = document.querySelector('#numero-visitas');
 
         fetch('https://nere64.goatcounter.com/counter//.json', { credentials: 'omit' })
