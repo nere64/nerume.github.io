@@ -12,6 +12,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
+    :root {
+            --fondo: #1d1815;
+            --panel: #2e2622;
+            --sombra: #171311;
+            --texto: #a09f97;
+            --claro: #cccec7;
+            --borde: #77746f;
+        }
+
+    body[data-tema="morado"] {
+            --fondo: #17121d;
+            --panel: #2a2035;
+            --sombra: #0e0a13;
+            --texto: #aaa0b8;
+            --claro: #d8cce5;
+            --borde: #776987;
+        }
+
+    body[data-tema="celeste"] {
+            --fondo: #101b20;
+            --panel: #1d3038;
+            --sombra: #091014;
+            --texto: #9fb4b9;
+            --claro: #c8e0e5;
+            --borde: #66818a;
+        }
+
     body {
             min-height: 100vh;
             margin: 0;
@@ -23,7 +50,7 @@
                 transparent 1px,
                 transparent 5px
             );
-            color: #a09f97;
+            color: var(--texto);
             font-family: 'VT323', monospace;
         }
 
@@ -76,6 +103,31 @@
             object-fit: contain;
         }
 
+    .selector-temas {
+            position: fixed;
+            left: max(12px, env(safe-area-inset-left));
+            bottom: max(12px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 6px;
+            z-index: 5;
+        }
+
+    .selector-temas button {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 2px solid var(--claro);
+            box-shadow: 3px 3px 0 var(--sombra);
+            cursor: pointer;
+        }
+
+    .tema-actual { background-color: #2e2622; }
+    .tema-morado { background-color: #8d5bb5; }
+    .tema-celeste { background-color: #5caebe; }
+    .tema-ciclico { background-color: #2e2622; }
+    body[data-tema="morado"] .tema-ciclico { background-color: #8d5bb5; }
+    body[data-tema="celeste"] .tema-ciclico { background-color: #5caebe; }
+
     @keyframes ruido {
             0% { background-position: 0 0; }
             50% { background-position: 12px -8px; }
@@ -92,5 +144,32 @@
         </p>
         <img src="https://i.imgur.com/7IS6fCg.png" width="300" height="300">
     </header>
+	<nav class="selector-temas" aria-label="Elegir tema">
+		<button class="tema-ciclico" id="boton-tema" type="button" aria-label="Cambiar tema" title="Cambiar tema"></button>
+	</nav>
+    <script>
+        const botonTema = document.querySelector('#boton-tema');
+        const temas = ['actual', 'morado', 'celeste'];
+        const temaGuardado = localStorage.getItem('tema-nerume');
+
+        if (temaGuardado && temaGuardado !== 'actual') {
+            document.body.dataset.tema = temaGuardado;
+        }
+
+        botonTema.addEventListener('click', () => {
+            const temaActual = document.body.dataset.tema || 'actual';
+            const siguienteIndice = (temas.indexOf(temaActual) + 1) % temas.length;
+            const siguienteTema = temas[siguienteIndice];
+
+            if (siguienteTema === 'actual') {
+                delete document.body.dataset.tema;
+                localStorage.removeItem('tema-nerume');
+                return;
+            }
+
+            document.body.dataset.tema = siguienteTema;
+            localStorage.setItem('tema-nerume', siguienteTema);
+        });
+    </script>
 </body>
 </html>

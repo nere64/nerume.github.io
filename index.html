@@ -18,6 +18,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --fondo: #1d1815;
+                --panel: #2e2622;
+                --sombra: #171311;
+                --texto: #a09f97;
+                --claro: #cccec7;
+                --borde: #77746f;
+            }
+
+            body[data-tema="morado"] {
+                --fondo: #17121d;
+                --panel: #2a2035;
+                --sombra: #0e0a13;
+                --texto: #aaa0b8;
+                --claro: #d8cce5;
+                --borde: #776987;
+            }
+
+            body[data-tema="celeste"] {
+                --fondo: #101b20;
+                --panel: #1d3038;
+                --sombra: #091014;
+                --texto: #9fb4b9;
+                --claro: #c8e0e5;
+                --borde: #66818a;
+            }
+        </style>
 <style>
     body {
             min-height: 100vh;
@@ -25,7 +53,7 @@
             padding: 0 24px;
             display: grid;
             place-items: center;
-            background-color: #1d1815;
+            background-color: var(--fondo);
             position: relative;
             background-image: repeating-linear-gradient(
                 0deg,
@@ -34,7 +62,7 @@
                 transparent 1px,
                 transparent 5px
             );
-            color: #a09f97;
+            color: var(--texto);
             font-family: 'VT323', monospace;
         }
 
@@ -69,7 +97,7 @@
             width: 90%;
             max-width: 720px;
             padding: 38px 30px 42px;
-            background-color: #2e2622;
+            background-color: var(--panel);
             background-image: repeating-linear-gradient(
                 0deg,
                 rgba(204, 206, 199, 0.03) 0,
@@ -77,8 +105,8 @@
                 transparent 1px,
                 transparent 5px
             );
-            border: 2px solid #77746f;
-            box-shadow: 8px 8px 0 #171311;
+            border: 2px solid var(--borde);
+            box-shadow: 8px 8px 0 var(--sombra);
             position: relative;
             z-index: 1;
             animation: aparecer 0.7s ease-out;
@@ -90,13 +118,54 @@
             z-index: 4;
             animation: aparecer-boton 0.7s ease-out both;
         }
+
+        .selector-temas {
+            position: fixed;
+            left: max(12px, env(safe-area-inset-left));
+            bottom: max(12px, env(safe-area-inset-bottom));
+            display: flex;
+            gap: 6px;
+            z-index: 4;
+        }
+
+        .selector-temas button {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 2px solid var(--claro);
+            box-shadow: 3px 3px 0 var(--sombra);
+        }
+
+        .tema-actual {
+            background-color: #2e2622;
+        }
+
+        .tema-morado {
+            background-color: #8d5bb5;
+        }
+
+        .tema-celeste {
+            background-color: #5caebe;
+        }
+
+        .tema-ciclico {
+            background-color: #2e2622;
+        }
+
+        body[data-tema="morado"] .tema-ciclico {
+            background-color: #8d5bb5;
+        }
+
+        body[data-tema="celeste"] .tema-ciclico {
+            background-color: #5caebe;
+        }
     h1 {
-            color: #a09f97;
+            color: var(--texto);
             margin: 0;
             font-size: clamp(4rem, 14vw, 7rem);
             line-height: 0.9;
             font-weight: normal;
-            text-shadow: 4px 4px 0 #171311;
+            text-shadow: 4px 4px 0 var(--sombra);
         }
 
     .titulo-con-icono {
@@ -112,15 +181,15 @@
         }
     p {
             margin: 0.35rem 0;
-            color: #a09f97;
+            color: var(--texto);
             line-height: 1;
             text-align: center;
-            text-shadow: #171311;
+            text-shadow: 2px 2px 0 var(--sombra);
         }
 
     .jeje {
             margin: 0.35rem 0 0;
-            color: #a09f97;
+            color: var(--texto);
             font-size: clamp(1.25rem, 4vw, 1.8rem);
             line-height: 1;
         }
@@ -149,10 +218,10 @@
             text-align: center;
             padding: 8px 4px;
             margin: 0;
-            background-color: #2e2622;
-            color: #a09f97;
-            border: 2px solid #77746f;
-            box-shadow: 4px 4px 0 #171311;
+            background-color: var(--panel);
+            color: var(--texto);
+            border: 2px solid var(--borde);
+            box-shadow: 4px 4px 0 var(--sombra);
             font-family: 'VT323', monospace;
             font-size: 1.25rem;
             cursor: pointer;
@@ -179,7 +248,7 @@
             max-width: 600px;
             margin: 0 auto;
             padding: 0 1.5rem;
-            border: 0 solid #77746f;
+            border: 0 solid var(--borde);
             text-align: left;
             position: relative;
             transition: max-height 0.7s ease-in-out, opacity 0.6s ease-in-out, margin 0.7s ease-in-out, padding 0.7s ease-in-out, border-width 0.7s ease-in-out;
@@ -195,7 +264,7 @@
 
     .apartado h2 {
             margin: 0 0 1rem;
-            color: #cccec7;
+            color: var(--claro);
             font-size: 2rem;
             font-weight: normal;
         }
@@ -209,8 +278,8 @@
             display: none;
             margin-top: 1rem !important;
             padding: 0.75rem 3rem 0.75rem 0.75rem;
-            border: 2px solid #cccec7;
-            color: #cccec7;
+            border: 2px solid var(--claro);
+            color: var(--claro);
             font-family: 'VT323', monospace;
             font-size: 1.25rem;
             font-style: normal;
@@ -302,6 +371,9 @@
 </button>
     </div>
     </div>
+    <nav class="selector-temas" aria-label="Elegir tema">
+        <button class="tema-ciclico" id="boton-tema" type="button" aria-label="Cambiar tema" title="Cambiar tema"></button>
+    </nav>
     <script>
         const textos = [
     'hola jeje',
@@ -324,6 +396,29 @@
 
         botonCambiante.textContent = textos[indiceTexto];
         setInterval(cambiarTexto, 5000);
+
+        const botonTema = document.querySelector('#boton-tema');
+        const temas = ['actual', 'morado', 'celeste'];
+        const temaGuardado = localStorage.getItem('tema-nerume');
+
+        if (temaGuardado && temaGuardado !== 'actual') {
+            document.body.dataset.tema = temaGuardado;
+        }
+
+        botonTema.addEventListener('click', () => {
+            const temaActual = document.body.dataset.tema || 'actual';
+            const siguienteIndice = (temas.indexOf(temaActual) + 1) % temas.length;
+            const siguienteTema = temas[siguienteIndice];
+
+            if (siguienteTema === 'actual') {
+                delete document.body.dataset.tema;
+                localStorage.removeItem('tema-nerume');
+                return;
+            }
+
+            document.body.dataset.tema = siguienteTema;
+            localStorage.setItem('tema-nerume', siguienteTema);
+        });
 
         document.addEventListener('click', (evento) => {
             const boton = evento.target.closest('button');

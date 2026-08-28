@@ -12,6 +12,33 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 	<style>
+		:root {
+			--fondo: #171311;
+			--panel: #2e2622;
+			--sombra: #0d0b0a;
+			--texto: #a09f97;
+			--claro: #cccec7;
+			--borde: #77746f;
+		}
+
+		body[data-tema="morado"] {
+			--fondo: #17121d;
+			--panel: #2a2035;
+			--sombra: #0e0a13;
+			--texto: #aaa0b8;
+			--claro: #d8cce5;
+			--borde: #776987;
+		}
+
+		body[data-tema="celeste"] {
+			--fondo: #101b20;
+			--panel: #1d3038;
+			--sombra: #091014;
+			--texto: #9fb4b9;
+			--claro: #c8e0e5;
+			--borde: #66818a;
+		}
+
 		* {
 			box-sizing: border-box;
 		}
@@ -178,6 +205,72 @@
 				background-position: -8px 10px;
 			}
 		}
+
+		body {
+			background-color: var(--fondo);
+			color: var(--texto);
+		}
+
+		.visor,
+		.foto {
+			background-color: var(--panel);
+		}
+
+		.visor,
+		.barra,
+		.entrada,
+		.foto,
+		.volver {
+			border-color: var(--borde);
+		}
+
+		.visor {
+			box-shadow: 8px 8px 0 var(--sombra);
+		}
+
+		h1,
+		.entrada p,
+		.volver {
+			color: var(--claro);
+		}
+
+		.barra,
+		.vacio {
+			color: var(--texto);
+		}
+
+		.entrada {
+			background-color: var(--fondo);
+		}
+
+		.volver:hover {
+			background-color: var(--claro);
+			color: var(--fondo);
+		}
+
+		.selector-temas {
+			position: fixed;
+			left: max(12px, env(safe-area-inset-left));
+			bottom: max(12px, env(safe-area-inset-bottom));
+			display: flex;
+			gap: 6px;
+			z-index: 5;
+		}
+
+		.selector-temas button {
+			width: 28px;
+			height: 28px;
+			padding: 0;
+			border: 2px solid var(--claro);
+			box-shadow: 3px 3px 0 var(--sombra);
+		}
+
+		.tema-actual { background-color: #2e2622; }
+		.tema-morado { background-color: #8d5bb5; }
+		.tema-celeste { background-color: #5caebe; }
+		.tema-ciclico { background-color: #2e2622; }
+		body[data-tema="morado"] .tema-ciclico { background-color: #8d5bb5; }
+		body[data-tema="celeste"] .tema-ciclico { background-color: #5caebe; }
 	</style>
 </head>
 <body>
@@ -192,8 +285,34 @@
 
 		<button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
 	</main>
+	<nav class="selector-temas" aria-label="Elegir tema">
+		<button class="tema-ciclico" id="boton-tema" type="button" aria-label="Cambiar tema" title="Cambiar tema"></button>
+	</nav>
 
 	<script>
+		const botonTema = document.querySelector('#boton-tema');
+		const temas = ['actual', 'morado', 'celeste'];
+		const temaGuardado = localStorage.getItem('tema-nerume');
+
+		if (temaGuardado && temaGuardado !== 'actual') {
+			document.body.dataset.tema = temaGuardado;
+		}
+
+		botonTema.addEventListener('click', () => {
+			const temaActual = document.body.dataset.tema || 'actual';
+			const siguienteIndice = (temas.indexOf(temaActual) + 1) % temas.length;
+			const siguienteTema = temas[siguienteIndice];
+
+			if (siguienteTema === 'actual') {
+				delete document.body.dataset.tema;
+				localStorage.removeItem('tema-nerume');
+				return;
+			}
+
+			document.body.dataset.tema = siguienteTema;
+			localStorage.setItem('tema-nerume', siguienteTema);
+		});
+
 		const entradas = [
 			{
 				imagen: "https://i.imgur.com/dXpSruT.jpeg",
