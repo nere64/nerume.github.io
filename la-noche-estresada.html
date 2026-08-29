@@ -160,22 +160,6 @@
             object-fit: contain;
         }
 
-    .contador-visitas {
-            position: fixed;
-            right: max(12px, env(safe-area-inset-right));
-            bottom: max(12px, env(safe-area-inset-bottom));
-            z-index: 5;
-            padding: 5px 12px;
-            background-color: var(--panel);
-            border: 2px solid var(--borde);
-            box-shadow: 4px 4px 0 var(--sombra);
-            color: var(--texto);
-            font-size: 1.15rem;
-            white-space: nowrap;
-        }
-
-    .contador-visitas strong { color: var(--claro); }
-
     @keyframes ruido {
             0% { background-position: 0 0; }
             50% { background-position: 12px -8px; }
@@ -196,11 +180,6 @@
             <img class="comic-ori" data-orden="3" src="3.png" alt="Viñeta horizontal 3">
         </div>
     </main>
-    <div class="contador-visitas">
-        visitas: <strong id="numero-visitas">...</strong>
-        <script data-goatcounter="https://nere64.goatcounter.com/count"
-                async src="//gc.zgo.at/count.js"></script>
-    </div>
     <script>
         const historia = document.querySelector('#historia');
         const comicGrid = historia.querySelector('.comic-grid');
@@ -209,20 +188,6 @@
         vinetas
             .sort((a, b) => Number(a.dataset.orden) - Number(b.dataset.orden))
             .forEach((vineta) => comicGrid.appendChild(vineta));
-
-        const numeroVisitas = document.querySelector('#numero-visitas');
-
-        fetch('https://nere64.goatcounter.com/counter//.json', { credentials: 'omit' })
-            .then((respuesta) => {
-                if (!respuesta.ok) throw new Error('No se pudo consultar el contador');
-                return respuesta.json();
-            })
-            .then((datos) => {
-                numeroVisitas.textContent = datos.count ?? '0';
-            })
-            .catch(() => {
-                numeroVisitas.textContent = '...';
-            });
 
     </script>
 </body>

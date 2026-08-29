@@ -92,9 +92,9 @@
 		.visor {
 			width: min(100%, 720px);
 			padding: 18px;
-			background: #2e2622;
-			border: 2px solid #77746f;
-			box-shadow: 8px 8px 0 #0d0b0a;
+			background: var(--panel);
+			border: 2px solid var(--borde);
+			box-shadow: 8px 8px 0 var(--sombra);
 			position: relative;
 			z-index: 1;
 		}
@@ -104,14 +104,14 @@
 			justify-content: space-between;
 			margin-bottom: 18px;
 			padding: 6px 10px;
-			border: 2px solid #77746f;
-			color: #a09f97;
+			border: 2px solid var(--borde);
+			color: var(--texto);
 			font-size: 1.2rem;
 		}
 
 		h1 {
 			margin: 0 0 18px;
-			color: #cccec7;
+			color: var(--claro);
 			font-size: clamp(2.5rem, 9vw, 5rem);
 			font-weight: normal;
 			text-align: center;
@@ -147,9 +147,9 @@
 			padding: 6px 10px;
 			font: inherit;
 			font-size: 1.2rem;
-			background: #1d1815;
-			border: 2px solid #77746f;
-			color: #cccec7;
+			background: var(--fondo);
+			border: 2px solid var(--borde);
+			color: var(--claro);
 			cursor: pointer;
 		}
 
@@ -321,21 +321,6 @@
 		body[data-tema="celeste"] .tema-ciclico { background-color: #5caebe; }
 		body[data-tema="rojo"] .tema-ciclico { background-color: #d83b3b; }
 
-		.contador-visitas {
-			position: fixed;
-			right: max(12px, env(safe-area-inset-right));
-			bottom: max(12px, env(safe-area-inset-bottom));
-			z-index: 5;
-			padding: 5px 12px;
-			background-color: var(--panel);
-			border: 2px solid var(--borde);
-			box-shadow: 4px 4px 0 var(--sombra);
-			color: var(--texto);
-			font-size: 1.15rem;
-			white-space: nowrap;
-		}
-
-		.contador-visitas strong { color: var(--claro); }
 	</style>
 </head>
 <body>
@@ -358,30 +343,11 @@
 
 		<button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
 	</main>
-	<div class="contador-visitas">
-		visitas: <strong id="numero-visitas">...</strong>
-		<script data-goatcounter="https://nere64.goatcounter.com/count"
-				async src="//gc.zgo.at/count.js"></script>
-	</div>
 	<nav class="selector-temas" aria-label="Elegir tema">
 		<button class="tema-ciclico" id="boton-tema" type="button" aria-label="Cambiar tema" title="Cambiar tema"></button>
 	</nav>
 
 	<script>
-		const numeroVisitas = document.querySelector('#numero-visitas');
-
-		fetch('https://nere64.goatcounter.com/counter//.json', { credentials: 'omit' })
-			.then((respuesta) => {
-				if (!respuesta.ok) throw new Error('No se pudo consultar el contador');
-				return respuesta.json();
-			})
-			.then((datos) => {
-				numeroVisitas.textContent = datos.count ?? '0';
-			})
-			.catch(() => {
-				numeroVisitas.textContent = '...';
-			});
-
 		const botonTema = document.querySelector('#boton-tema');
 		const temas = ['actual', 'morado', 'celeste', 'rojo'];
 		const temaGuardado = localStorage.getItem('tema-nerume');
