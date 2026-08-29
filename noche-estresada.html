@@ -96,6 +96,12 @@
             height: auto;
             margin: 0 auto;
         }
+        
+            .comic-vertical img {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
 
         .mensaje-comic {
             margin: clamp(16px, 3vw, 28px) auto 0;
@@ -170,11 +176,37 @@
 
         <h1>NOCHE ESTRESADA</h1>
 
-        <img class="comic-vertical" src="portada27.png" alt="Comic vertical de Noche estresada">
+            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
 
         <p class="mensaje-comic">este comic esta siendo avanzado, tenga paciencia :b</p>
 
         <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
+        <script>
+            const comic = document.querySelector('#comic-vertical');
+            let numeroPortada = 1;
+
+            const cargarPortadas = () => {
+                const imagen = new Image();
+                const nombre = `PORTADA-${numeroPortada}.png`;
+
+                imagen.onload = () => {
+                    imagen.alt = `Viñeta ${numeroPortada} del comic`;
+                    comic.appendChild(imagen);
+                    numeroPortada++;
+                    cargarPortadas();
+                };
+
+                imagen.onerror = () => {
+                    if (numeroPortada === 1) {
+                        comic.textContent = 'No hay imagenes del comic todavia.';
+                    }
+                };
+
+                imagen.src = nombre;
+            };
+
+            cargarPortadas();
+        </script>
     </main>
 </body>
 </html>
