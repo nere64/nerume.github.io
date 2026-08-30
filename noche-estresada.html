@@ -308,10 +308,21 @@
                     }
                 }
 
+                paginas.sort((a, b) => {
+                    const infoA = obtenerInfoArchivo(a.archivo);
+                    const infoB = obtenerInfoArchivo(b.archivo);
+
+                    if (!infoA || !infoB) return 0;
+                    if (infoA.pagina !== infoB.pagina) return infoA.pagina - infoB.pagina;
+                    return infoA.capitulo - infoB.capitulo;
+                });
+
                 return paginas;
             };
 
             let indiceCapituloActual = 0;
+            let paginasDisponibles = [];
+            let indiceCargado = 0;
 
             const obtenerBloquesDeCapitulo = () => {
                 return [...comic.querySelectorAll('section[data-archivo]')].filter((bloque) => {
@@ -340,61 +351,85 @@
                 cubitoSalto.setAttribute('aria-label', `Saltar a ${bloqueDestino.dataset.archivo}`);
             };
 
-            const cargarPagina = (archivo, label) => {
-                return new Promise((resolve) => {
-                    const imagen = new Image();
-                    imagen.onload = () => {
-                        const bloque = document.createElement('section');
-                        bloque.className = 'comic-vertical';
-                        bloque.setAttribute('aria-label', label);
-                        bloque.dataset.archivo = archivo;
-                        imagen.alt = label;
-                        bloque.appendChild(imagen);
-                        comic.appendChild(bloque);
+            const cargarPagina = (pagina, prioridad = false) => {
+                const { archivo, label } = pagina;
+                const imagen = new Image();
+                imagen.loading = prioridad ? 'eager' : 'lazy';
+                imagen.decoding = 'async';
+                imagen.onload = () => {
+                    const bloque = document.createElement('section');
+                    bloque.className = 'comic-vertical';
+                    bloque.setAttribute('aria-label', label);
+                    bloque.dataset.archivo = archivo;
+                    imagen.alt = label;
+                    bloque.appendChild(imagen);
+                    comic.appendChild(bloque);
 
-                        if (esInicioDeCapitulo(archivo)) {
-                            const bloquesCapitulo = obtenerBloquesDeCapitulo();
-                            const indiceActual = bloquesCapitulo.findIndex((bloque) => bloque.dataset.archivo === archivo);
-                            if (indiceActual >= 0) {
-                                indiceCapituloActual = indiceActual;
-                            }
-                            mostrarSalto(archivo, label);
+                    if (esInicioDeCapitulo(archivo)) {
+                        const bloquesCapitulo = obtenerBloquesDeCapitulo();
+                        const indiceActual = bloquesCapitulo.findIndex((bloqueActual) => bloqueActual.dataset.archivo === archivo);
+                        if (indiceActual >= 0) {
+                            indiceCapituloActual = indiceActual;
                         }
-
-                        resolve();
-                    };
-                    imagen.onerror = () => resolve();
-                    imagen.src = archivo;
-                });
+                        mostrarSalto(archivo, label);
+                    }
+                };
+                imagen.src = archivo;
             };
 
             cubitoSalto.addEventListener('click', () => {
                 irAlSiguienteBloque();
             });
 
-            const cargarComic = async () => {
-                const paginas = await obtenerPaginasDisponibles();
+            const cargarLotes = (inicio = 0) => {
+                const lote = paginasDisponibles.slice(inicio, inicio + 2);
+                if (!lote.length) return;
 
-                if (!paginas.length) {
+                lote.forEach((pagina, index) => {
+                    const prioridad = inicio === 0 && index === 0;
+                    cargarPagina(pagina, prioridad);
+                });
+
+                indiceCargado = Math.min(inicio + 2, paginasDisponibles.length);
+            };
+
+            const cargarComic = async () => {
+                paginasDisponibles = await obtenerPaginasDisponibles();
+
+                if (!paginasDisponibles.length) {
                     comic.textContent = 'No hay imagenes del comic todavia.';
                     selectorSaltos.classList.remove('visible');
                     return;
                 }
 
-                paginas.sort((a, b) => {
-                    const infoA = obtenerInfoArchivo(a.archivo);
-                    const infoB = obtenerInfoArchivo(b.archivo);
+                cargarLotes(0);
 
-                    if (!infoA || !infoB) return 0;
-                    if (infoA.pagina !== infoB.pagina) return infoA.pagina - infoB.pagina;
-                    return infoA.capitulo - infoB.capitulo;
-                });
+                if (paginasDisponibles.length > 2) {
+                    const observer = new IntersectionObserver((entries) => {
+                        const ultimaEntrada = entries[entries.length - 1];
+                        if (!ultimaEntrada || !ultimaEntrada.isIntersecting) return;
 
-                for (const pagina of paginas) {
-                    await cargarPagina(pagina.archivo, pagina.label);
+                        if (indiceCargado < paginasDisponibles.length) {
+                            cargarLotes(indiceCargado);
+                        }
+                    }, {
+                        rootMargin: '300px 0px'
+                    });
+
+                    const ultimoBloque = () => comic.querySelector('section[data-archivo]:last-of-type');
+                    const vigilarUltimo = () => {
+                        const bloque = ultimoBloque();
+                        if (bloque) {
+                            observer.observe(bloque);
+                            return;
+                        }
+                        requestAnimationFrame(vigilarUltimo);
+                    };
+
+                    vigilarUltimo();
                 }
 
-                const saltoDetectado = paginas.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
+                const saltoDetectado = paginasDisponibles.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
                 if (!saltoDetectado) {
                     selectorSaltos.classList.remove('visible');
                 }
