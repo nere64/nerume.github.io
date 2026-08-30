@@ -239,7 +239,9 @@
 
         <h1></h1>
 
-            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
+            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada">
+                <img src="PORTADA-1.png" alt="Portada 1" loading="eager" decoding="async">
+            </div>
 
         <nav class="selector-saltos" aria-label="Saltar entre páginas">
             <button class="cubito" type="button" aria-label="Saltar a la siguiente página">
@@ -255,20 +257,13 @@
             const selectorSaltos = document.querySelector('.selector-saltos');
             const cubitoSalto = selectorSaltos.querySelector('.cubito');
 
-            const versionCache = Date.now();
-
-            const archivoConVersion = (nombreArchivo) => {
-                return `${nombreArchivo}?v=${versionCache}`;
-            };
-
-            const existeImagen = (nombreArchivo) => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => resolve(true);
-                    img.onerror = () => resolve(false);
-                    img.src = archivoConVersion(nombreArchivo);
-                });
-            };
+            const paginasDisponibles = [
+                { archivo: 'PORTADA-1.png', label: 'Portada 1' },
+                { archivo: 'PORTADA-2.png', label: 'Portada 2' },
+                { archivo: 'PORTADA-3.png', label: 'Portada 3' },
+                { archivo: 'PORTADA-4.png', label: 'Portada 4' },
+                { archivo: '2PORTADA-5.png', label: 'Capítulo 2 - página 5' }
+            ];
 
             const obtenerInfoArchivo = (nombreArchivo) => {
                 const match = /^(?:(\d+))?PORTADA-(\d+)\.png$/i.exec(nombreArchivo);
@@ -294,34 +289,8 @@
                 return Boolean(info && info.capitulo > 1);
             };
 
-            const obtenerPaginasDisponibles = async () => {
-                const candidatos = [];
-                const maxPaginas = 30;
-                const maxCapitulos = 12;
-
-                for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
-                    candidatos.push({ archivo: `PORTADA-${pagina}.png`, label: `Portada ${pagina}` });
-                }
-
-                for (let capitulo = 2; capitulo <= maxCapitulos; capitulo += 1) {
-                    for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
-                        candidatos.push({
-                            archivo: `${capitulo}PORTADA-${pagina}.png`,
-                            label: `Capítulo ${capitulo} - página ${pagina}`
-                        });
-                    }
-                }
-
-                const paginasDisponibles = await Promise.all(
-                    candidatos.map(async (pagina) => {
-                        const existe = await existeImagen(pagina.archivo);
-                        return existe ? pagina : null;
-                    })
-                );
-
-                const paginas = paginasDisponibles.filter(Boolean);
-
-                paginas.sort((a, b) => {
+            const obtenerPaginasDisponibles = () => {
+                return [...paginasDisponibles].sort((a, b) => {
                     const infoA = obtenerInfoArchivo(a.archivo);
                     const infoB = obtenerInfoArchivo(b.archivo);
 
@@ -329,12 +298,9 @@
                     if (infoA.pagina !== infoB.pagina) return infoA.pagina - infoB.pagina;
                     return infoA.capitulo - infoB.capitulo;
                 });
-
-                return paginas;
             };
 
             let indiceCapituloActual = 0;
-            let paginasDisponibles = [];
             let indiceCargado = 0;
 
             const obtenerBloquesDeCapitulo = () => {
@@ -367,7 +333,6 @@
             const cargarPagina = (pagina, prioridad = false) => {
                 const { archivo, label } = pagina;
                 const imagen = new Image();
-                const rutaConVersion = archivoConVersion(archivo);
                 imagen.loading = prioridad ? 'eager' : 'lazy';
                 imagen.decoding = 'async';
                 imagen.onload = () => {
@@ -388,7 +353,7 @@
                         mostrarSalto(archivo, label);
                     }
                 };
-                imagen.src = rutaConVersion;
+                imagen.src = archivo;
             };
 
             cubitoSalto.addEventListener('click', () => {
@@ -396,7 +361,8 @@
             });
 
             const cargarLotes = (inicio = 0) => {
-                const lote = paginasDisponibles.slice(inicio, inicio + 2);
+                const paginas = obtenerPaginasDisponibles().slice(1);
+                const lote = paginas.slice(inicio, inicio + 2);
                 if (!lote.length) return;
 
                 lote.forEach((pagina, index) => {
@@ -404,46 +370,26 @@
                     cargarPagina(pagina, prioridad);
                 });
 
-                indiceCargado = Math.min(inicio + 2, paginasDisponibles.length);
+                indiceCargado = Math.min(inicio + 2, paginas.length);
             };
 
-            const cargarComic = async () => {
-                paginasDisponibles = await obtenerPaginasDisponibles();
+            const cargarComic = () => {
+                const paginas = obtenerPaginasDisponibles();
 
-                if (!paginasDisponibles.length) {
+                if (!paginas.length) {
                     comic.textContent = 'No hay imagenes del comic todavia.';
                     selectorSaltos.classList.remove('visible');
                     return;
                 }
 
-                cargarLotes(0);
-
-                if (paginasDisponibles.length > 2) {
-                    const observer = new IntersectionObserver((entries) => {
-                        const ultimaEntrada = entries[entries.length - 1];
-                        if (!ultimaEntrada || !ultimaEntrada.isIntersecting) return;
-
-                        if (indiceCargado < paginasDisponibles.length) {
-                            cargarLotes(indiceCargado);
-                        }
-                    }, {
-                        rootMargin: '300px 0px'
-                    });
-
-                    const ultimoBloque = () => comic.querySelector('section[data-archivo]:last-of-type');
-                    const vigilarUltimo = () => {
-                        const bloque = ultimoBloque();
-                        if (bloque) {
-                            observer.observe(bloque);
-                            return;
-                        }
-                        requestAnimationFrame(vigilarUltimo);
-                    };
-
-                    vigilarUltimo();
+                const primerBloque = comic.querySelector('img');
+                if (primerBloque) {
+                    primerBloque.alt = 'Portada 1';
                 }
 
-                const saltoDetectado = paginasDisponibles.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
+                cargarLotes(0);
+
+                const saltoDetectado = paginas.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
                 if (!saltoDetectado) {
                     selectorSaltos.classList.remove('visible');
                 }
