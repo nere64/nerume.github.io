@@ -295,27 +295,31 @@
             };
 
             const obtenerPaginasDisponibles = async () => {
-                const paginas = [];
+                const candidatos = [];
                 const maxPaginas = 30;
                 const maxCapitulos = 12;
 
                 for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
-                    const nombreBase = `PORTADA-${pagina}.png`;
-                    const existeBase = await existeImagen(nombreBase);
-                    if (existeBase) {
-                        paginas.push({ archivo: nombreBase, label: `Portada ${pagina}` });
-                    }
+                    candidatos.push({ archivo: `PORTADA-${pagina}.png`, label: `Portada ${pagina}` });
                 }
 
                 for (let capitulo = 2; capitulo <= maxCapitulos; capitulo += 1) {
                     for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
-                        const nombreCapitulo = `${capitulo}PORTADA-${pagina}.png`;
-                        const existeCapitulo = await existeImagen(nombreCapitulo);
-                        if (existeCapitulo) {
-                            paginas.push({ archivo: nombreCapitulo, label: `Capítulo ${capitulo} - página ${pagina}` });
-                        }
+                        candidatos.push({
+                            archivo: `${capitulo}PORTADA-${pagina}.png`,
+                            label: `Capítulo ${capitulo} - página ${pagina}`
+                        });
                     }
                 }
+
+                const paginasDisponibles = await Promise.all(
+                    candidatos.map(async (pagina) => {
+                        const existe = await existeImagen(pagina.archivo);
+                        return existe ? pagina : null;
+                    })
+                );
+
+                const paginas = paginasDisponibles.filter(Boolean);
 
                 paginas.sort((a, b) => {
                     const infoA = obtenerInfoArchivo(a.archivo);
