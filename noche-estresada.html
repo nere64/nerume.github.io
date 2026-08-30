@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Nerume - Noche estresada</title>
     <meta name="description" content="Comic vertical de Noche estresada.">
     <link rel="canonical" href="https://nerume.com/noche-estresada.html">
@@ -252,12 +255,18 @@
             const selectorSaltos = document.querySelector('.selector-saltos');
             const cubitoSalto = selectorSaltos.querySelector('.cubito');
 
+            const versionCache = Date.now();
+
+            const archivoConVersion = (nombreArchivo) => {
+                return `${nombreArchivo}?v=${versionCache}`;
+            };
+
             const existeImagen = (nombreArchivo) => {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => resolve(true);
                     img.onerror = () => resolve(false);
-                    img.src = nombreArchivo;
+                    img.src = archivoConVersion(nombreArchivo);
                 });
             };
 
@@ -354,6 +363,7 @@
             const cargarPagina = (pagina, prioridad = false) => {
                 const { archivo, label } = pagina;
                 const imagen = new Image();
+                const rutaConVersion = archivoConVersion(archivo);
                 imagen.loading = prioridad ? 'eager' : 'lazy';
                 imagen.decoding = 'async';
                 imagen.onload = () => {
@@ -362,6 +372,7 @@
                     bloque.setAttribute('aria-label', label);
                     bloque.dataset.archivo = archivo;
                     imagen.alt = label;
+                    imagen.src = rutaConVersion;
                     bloque.appendChild(imagen);
                     comic.appendChild(bloque);
 
@@ -374,7 +385,7 @@
                         mostrarSalto(archivo, label);
                     }
                 };
-                imagen.src = archivo;
+                imagen.src = rutaConVersion;
             };
 
             cubitoSalto.addEventListener('click', () => {
