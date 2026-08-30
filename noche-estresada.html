@@ -100,11 +100,11 @@
             margin: 0 auto;
         }
         
-            .comic-vertical img {
-                display: block;
-                width: 100%;
-                height: auto;
-            }
+        .comic-vertical img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
 
         .mensaje-comic {
             margin: clamp(16px, 3vw, 28px) auto 0;
@@ -236,12 +236,11 @@
 </head>
 <body>
     <main class="visor">
-
         <h1></h1>
 
-            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada">
-                <img src="PORTADA-1.png" alt="Portada 1" loading="eager" decoding="async">
-            </div>
+        <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada">
+            <!-- Las viñetas se irán añadiendo solas aquí -->
+        </div>
 
         <nav class="selector-saltos" aria-label="Saltar entre páginas">
             <button class="cubito" type="button" aria-label="Saltar a la siguiente página">
@@ -252,32 +251,14 @@
         <p class="mensaje-comic">este comic esta siendo avanzado de a poco, tenga paciencia :b</p>
         <p>subire una pagina diaria y los findes 2 o 3</p>
         <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
+        
         <script>
             const comic = document.querySelector('#comic-vertical');
             const selectorSaltos = document.querySelector('.selector-saltos');
             const cubitoSalto = selectorSaltos.querySelector('.cubito');
 
-            const paginasDisponibles = [
-                { archivo: 'PORTADA-1.png', label: 'Portada 1' },
-                { archivo: 'PORTADA-2.png', label: 'Portada 2' },
-                { archivo: 'PORTADA-3.png', label: 'Portada 3' },
-                { archivo: 'PORTADA-4.png', label: 'Portada 4' },
-                { archivo: '2PORTADA-5.png', label: 'Capítulo 2 - página 5' }
-            ];
-
-            const obtenerInfoArchivo = (nombreArchivo) => {
-                const match = /^(?:(\d+))?PORTADA-(\d+)\.png$/i.exec(nombreArchivo);
-                if (!match) return null;
-
-                const [, prefijo, pagina] = match;
-                const capitulo = prefijo ? Number(prefijo) : 1;
-
-                return {
-                    capitulo,
-                    pagina: Number(pagina),
-                    esSalto: Boolean(prefijo)
-                };
-            };
+            let paginasEncontradas = [];
+            let indiceCapituloActual = 0;
 
             const esInicioDeCapitulo = (nombreArchivo) => {
                 if (!nombreArchivo) return false;
@@ -285,23 +266,11 @@
             };
 
             const esSaltoDeCapitulo = (nombreArchivo) => {
-                const info = obtenerInfoArchivo(nombreArchivo);
-                return Boolean(info && info.capitulo > 1);
+                const match = /^(?:(\d+))?PORTADA-(\d+)\.png$/i.exec(nombreArchivo);
+                if (!match) return false;
+                const prefijo = match[1];
+                return Boolean(prefijo && Number(prefijo) > 1);
             };
-
-            const obtenerPaginasDisponibles = () => {
-                return [...paginasDisponibles].sort((a, b) => {
-                    const infoA = obtenerInfoArchivo(a.archivo);
-                    const infoB = obtenerInfoArchivo(b.archivo);
-
-                    if (!infoA || !infoB) return 0;
-                    if (infoA.pagina !== infoB.pagina) return infoA.pagina - infoB.pagina;
-                    return infoA.capitulo - infoB.capitulo;
-                });
-            };
-
-            let indiceCapituloActual = 0;
-            let indiceCargado = 0;
 
             const obtenerBloquesDeCapitulo = () => {
                 return [...comic.querySelectorAll('section[data-archivo]')].filter((bloque) => {
@@ -330,72 +299,73 @@
                 cubitoSalto.setAttribute('aria-label', `Saltar a ${bloqueDestino.dataset.archivo}`);
             };
 
-            const cargarPagina = (pagina, prioridad = false) => {
-                const { archivo, label } = pagina;
-                const imagen = new Image();
-                imagen.loading = prioridad ? 'eager' : 'lazy';
-                imagen.decoding = 'async';
-                imagen.onload = () => {
-                    const bloque = document.createElement('section');
-                    bloque.className = 'comic-vertical';
-                    bloque.setAttribute('aria-label', label);
-                    bloque.dataset.archivo = archivo;
-                    imagen.alt = label;
-                    bloque.appendChild(imagen);
-                    comic.appendChild(bloque);
+            cubitoSalto.addEventListener('click', irAlSiguienteBloque);
 
-                    if (esInicioDeCapitulo(archivo)) {
-                        const bloquesCapitulo = obtenerBloquesDeCapitulo();
-                        const indiceActual = bloquesCapitulo.findIndex((bloqueActual) => bloqueActual.dataset.archivo === archivo);
-                        if (indiceActual >= 0) {
-                            indiceCapituloActual = indiceActual;
-                        }
-                        mostrarSalto(archivo, label);
+            // FUNCIÓN DE AUTODESCUBRIMIENTO
+            const explorarCarpeta = (numPagina) => {
+                // El script intentará buscar la imagen sin prefijo, y si falla intentará con los capítulos del 2 al 15
+                const prefijosPosibles = ["", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"];
+                let intentoActual = 0;
+
+                const intentar = () => {
+                    if (intentoActual >= prefijosPosibles.length) {
+                        // Se agotaron los intentos para este número. Significa que ya no hay más páginas en la carpeta.
+                        finalizarCarga();
+                        return;
                     }
+
+                    const prefijo = prefijosPosibles[intentoActual];
+                    const archivo = `${prefijo}PORTADA-${numPagina}.png`;
+
+                    const img = new Image();
+                    img.onload = () => {
+                        // ¡Bingo! La imagen existe. La añadimos al HTML.
+                        const label = prefijo ? `Capítulo ${prefijo} - Página ${numPagina}` : `Página ${numPagina}`;
+                        paginasEncontradas.push({ archivo, label });
+                        
+                        const bloque = document.createElement('section');
+                        bloque.className = 'comic-vertical';
+                        bloque.setAttribute('aria-label', label);
+                        bloque.dataset.archivo = archivo;
+                        
+                        img.alt = label;
+                        img.loading = 'lazy';
+                        bloque.appendChild(img);
+                        comic.appendChild(bloque);
+
+                        // Como ya encontramos esta página, buscamos inmediatamente el número siguiente.
+                        explorarCarpeta(numPagina + 1);
+                    };
+
+                    img.onerror = () => {
+                        // La imagen con este prefijo no existe, intentamos con el siguiente prefijo de la lista.
+                        intentoActual++;
+                        intentar();
+                    };
+
+                    img.src = archivo;
                 };
-                imagen.src = archivo;
+
+                intentar();
             };
 
-            cubitoSalto.addEventListener('click', () => {
-                irAlSiguienteBloque();
-            });
-
-            const cargarLotes = (inicio = 0) => {
-                const paginas = obtenerPaginasDisponibles().slice(1);
-                const lote = paginas.slice(inicio, inicio + 2);
-                if (!lote.length) return;
-
-                lote.forEach((pagina, index) => {
-                    const prioridad = inicio === 0 && index === 0;
-                    cargarPagina(pagina, prioridad);
-                });
-
-                indiceCargado = Math.min(inicio + 2, paginas.length);
-            };
-
-            const cargarComic = () => {
-                const paginas = obtenerPaginasDisponibles();
-
-                if (!paginas.length) {
+            const finalizarCarga = () => {
+                if (paginasEncontradas.length === 0) {
                     comic.textContent = 'No hay imagenes del comic todavia.';
                     selectorSaltos.classList.remove('visible');
-                    return;
-                }
-
-                const primerBloque = comic.querySelector('img');
-                if (primerBloque) {
-                    primerBloque.alt = 'Portada 1';
-                }
-
-                cargarLotes(0);
-
-                const saltoDetectado = paginas.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
-                if (!saltoDetectado) {
-                    selectorSaltos.classList.remove('visible');
+                } else {
+                    const saltoDetectado = paginasEncontradas.some((p) => esSaltoDeCapitulo(p.archivo));
+                    if (saltoDetectado) {
+                        const primerSalto = paginasEncontradas.find((p) => esInicioDeCapitulo(p.archivo));
+                        if (primerSalto) mostrarSalto(primerSalto.archivo, primerSalto.label);
+                    } else {
+                        selectorSaltos.classList.remove('visible');
+                    }
                 }
             };
 
-            cargarComic();
+            // Iniciar la búsqueda automática desde la viñeta 1
+            explorarCarpeta(1);
         </script>
     </main>
 </body>
