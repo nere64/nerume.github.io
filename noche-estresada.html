@@ -111,12 +111,76 @@
             text-align: center;
         }
 
+        .selector-saltos {
+            position: fixed;
+            right: max(12px, env(safe-area-inset-right));
+            bottom: max(12px, env(safe-area-inset-bottom));
+            z-index: 20;
+            display: none;
+        }
+
+        .selector-saltos.visible {
+            display: flex;
+        }
+
+        .selector-saltos button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            border: 2px solid var(--borde);
+            background: var(--panel);
+            color: var(--claro);
+            box-shadow: 4px 4px 0 var(--sombra);
+            line-height: 1;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            animation: deslizar-arriba 0.4s ease-out;
+        }
+
+        .selector-saltos button::before {
+            content: '';
+            position: absolute;
+            inset: 7px;
+            border: 2px solid rgba(204, 206, 199, 0.4);
+            transform: translateZ(0);
+        }
+
+        .selector-saltos button:hover,
+        .selector-saltos button:focus-visible {
+            background: var(--claro);
+            color: var(--fondo);
+            transform: translateY(-4px);
+            box-shadow: 6px 8px 0 var(--sombra);
+        }
+
+        .selector-saltos button:active {
+            transform: translateY(1px);
+            box-shadow: 2px 2px 0 var(--sombra);
+        }
+
+        @keyframes deslizar-arriba {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .volver {
             display: block;
             width: max-content;
+            min-width: 180px;
             max-width: 100%;
             margin: clamp(16px, 3vw, 28px) auto 0;
-            padding: 8px 16px;
+            padding: 8px 18px;
             background: var(--fondo);
             border: 2px solid var(--borde);
             color: var(--claro);
@@ -174,34 +238,167 @@
 
             <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
 
+        <nav class="selector-saltos" aria-label="Saltar entre páginas">
+            <button class="cubito" type="button" aria-label="Saltar a la siguiente página">▣</button>
+        </nav>
+
         <p class="mensaje-comic">este comic esta siendo avanzado de a poco, tenga paciencia :b</p>
         <p>subire una pagina diaria y los findes 2 o 3</p>
         <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
         <script>
             const comic = document.querySelector('#comic-vertical');
-            let numeroPortada = 1;
+            const selectorSaltos = document.querySelector('.selector-saltos');
+            const cubitoSalto = selectorSaltos.querySelector('.cubito');
 
-            const cargarPortadas = () => {
-                const imagen = new Image();
-                const nombre = `PORTADA-${numeroPortada}.png`;
-
-                imagen.onload = () => {
-                    imagen.alt = `Viñeta ${numeroPortada} del comic`;
-                    comic.appendChild(imagen);
-                    numeroPortada++;
-                    cargarPortadas();
-                };
-
-                imagen.onerror = () => {
-                    if (numeroPortada === 1) {
-                        comic.textContent = 'No hay imagenes del comic todavia.';
-                    }
-                };
-
-                imagen.src = nombre;
+            const existeImagen = (nombreArchivo) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve(true);
+                    img.onerror = () => resolve(false);
+                    img.src = nombreArchivo;
+                });
             };
 
-            cargarPortadas();
+            const obtenerInfoArchivo = (nombreArchivo) => {
+                const match = /^(?:(\d+))?PORTADA-(\d+)\.png$/i.exec(nombreArchivo);
+                if (!match) return null;
+
+                const [, prefijo, pagina] = match;
+                const capitulo = prefijo ? Number(prefijo) : 1;
+
+                return {
+                    capitulo,
+                    pagina: Number(pagina),
+                    esSalto: Boolean(prefijo)
+                };
+            };
+
+            const esInicioDeCapitulo = (nombreArchivo) => {
+                if (!nombreArchivo) return false;
+                return nombreArchivo === 'PORTADA-1.png' || /^\d+PORTADA-\d+\.png$/i.test(nombreArchivo);
+            };
+
+            const esSaltoDeCapitulo = (nombreArchivo) => {
+                const info = obtenerInfoArchivo(nombreArchivo);
+                return Boolean(info && info.capitulo > 1);
+            };
+
+            const obtenerPaginasDisponibles = async () => {
+                const paginas = [];
+                const maxPaginas = 30;
+                const maxCapitulos = 12;
+
+                for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
+                    const nombreBase = `PORTADA-${pagina}.png`;
+                    const existeBase = await existeImagen(nombreBase);
+                    if (existeBase) {
+                        paginas.push({ archivo: nombreBase, label: `Portada ${pagina}` });
+                    }
+                }
+
+                for (let capitulo = 2; capitulo <= maxCapitulos; capitulo += 1) {
+                    for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
+                        const nombreCapitulo = `${capitulo}PORTADA-${pagina}.png`;
+                        const existeCapitulo = await existeImagen(nombreCapitulo);
+                        if (existeCapitulo) {
+                            paginas.push({ archivo: nombreCapitulo, label: `Capítulo ${capitulo} - página ${pagina}` });
+                        }
+                    }
+                }
+
+                return paginas;
+            };
+
+            let indiceCapituloActual = 0;
+
+            const obtenerBloquesDeCapitulo = () => {
+                return [...comic.querySelectorAll('section[data-archivo]')].filter((bloque) => {
+                    const archivo = bloque.dataset.archivo || '';
+                    return esInicioDeCapitulo(archivo);
+                });
+            };
+
+            const mostrarSalto = (archivo, label) => {
+                cubitoSalto.dataset.archivo = archivo;
+                cubitoSalto.dataset.label = label;
+                cubitoSalto.setAttribute('aria-label', `Saltar a ${label}`);
+                selectorSaltos.classList.add('visible');
+            };
+
+            const irAlSiguienteBloque = () => {
+                const bloquesCapitulo = obtenerBloquesDeCapitulo();
+                if (!bloquesCapitulo.length) return;
+
+                indiceCapituloActual = (indiceCapituloActual + 1) % bloquesCapitulo.length;
+                const bloqueDestino = bloquesCapitulo[indiceCapituloActual];
+
+                if (!bloqueDestino) return;
+                bloqueDestino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                cubitoSalto.dataset.archivo = bloqueDestino.dataset.archivo;
+                cubitoSalto.setAttribute('aria-label', `Saltar a ${bloqueDestino.dataset.archivo}`);
+            };
+
+            const cargarPagina = (archivo, label) => {
+                return new Promise((resolve) => {
+                    const imagen = new Image();
+                    imagen.onload = () => {
+                        const bloque = document.createElement('section');
+                        bloque.className = 'comic-vertical';
+                        bloque.setAttribute('aria-label', label);
+                        bloque.dataset.archivo = archivo;
+                        imagen.alt = label;
+                        bloque.appendChild(imagen);
+                        comic.appendChild(bloque);
+
+                        if (esInicioDeCapitulo(archivo)) {
+                            const bloquesCapitulo = obtenerBloquesDeCapitulo();
+                            const indiceActual = bloquesCapitulo.findIndex((bloque) => bloque.dataset.archivo === archivo);
+                            if (indiceActual >= 0) {
+                                indiceCapituloActual = indiceActual;
+                            }
+                            mostrarSalto(archivo, label);
+                        }
+
+                        resolve();
+                    };
+                    imagen.onerror = () => resolve();
+                    imagen.src = archivo;
+                });
+            };
+
+            cubitoSalto.addEventListener('click', () => {
+                irAlSiguienteBloque();
+            });
+
+            const cargarComic = async () => {
+                const paginas = await obtenerPaginasDisponibles();
+
+                if (!paginas.length) {
+                    comic.textContent = 'No hay imagenes del comic todavia.';
+                    selectorSaltos.classList.remove('visible');
+                    return;
+                }
+
+                paginas.sort((a, b) => {
+                    const infoA = obtenerInfoArchivo(a.archivo);
+                    const infoB = obtenerInfoArchivo(b.archivo);
+
+                    if (!infoA || !infoB) return 0;
+                    if (infoA.pagina !== infoB.pagina) return infoA.pagina - infoB.pagina;
+                    return infoA.capitulo - infoB.capitulo;
+                });
+
+                for (const pagina of paginas) {
+                    await cargarPagina(pagina.archivo, pagina.label);
+                }
+
+                const saltoDetectado = paginas.some((pagina) => esSaltoDeCapitulo(pagina.archivo));
+                if (!saltoDetectado) {
+                    selectorSaltos.classList.remove('visible');
+                }
+            };
+
+            cargarComic();
         </script>
     </main>
 </body>
