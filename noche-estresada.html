@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Nerume - Noche estresada</title>
     <meta name="description" content="Comic vertical de Noche estresada.">
     <link rel="canonical" href="https://nerume.com/noche-estresada.html">
@@ -100,11 +97,11 @@
             margin: 0 auto;
         }
         
-        .comic-vertical img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
+            .comic-vertical img {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
 
         .mensaje-comic {
             margin: clamp(16px, 3vw, 28px) auto 0;
@@ -114,76 +111,12 @@
             text-align: center;
         }
 
-        .selector-saltos {
-            position: fixed;
-            right: max(12px, env(safe-area-inset-right));
-            bottom: max(12px, env(safe-area-inset-bottom));
-            z-index: 20;
-            display: none;
-        }
-
-        .selector-saltos.visible {
-            display: flex;
-        }
-
-        .selector-saltos button {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            border: 2px solid var(--borde);
-            background: var(--panel);
-            color: var(--claro);
-            box-shadow: 4px 4px 0 var(--sombra);
-            line-height: 1;
-            cursor: pointer;
-            font-size: 1.25rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-            animation: deslizar-arriba 0.4s ease-out;
-        }
-
-        .selector-saltos button::before {
-            content: '';
-            position: absolute;
-            inset: 7px;
-            border: 2px solid rgba(204, 206, 199, 0.4);
-            transform: translateZ(0);
-        }
-
-        .selector-saltos button:hover,
-        .selector-saltos button:focus-visible {
-            background: var(--claro);
-            color: var(--fondo);
-            transform: translateY(-4px);
-            box-shadow: 6px 8px 0 var(--sombra);
-        }
-
-        .selector-saltos button:active {
-            transform: translateY(1px);
-            box-shadow: 2px 2px 0 var(--sombra);
-        }
-
-        @keyframes deslizar-arriba {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .volver {
             display: block;
             width: max-content;
-            min-width: 180px;
             max-width: 100%;
             margin: clamp(16px, 3vw, 28px) auto 0;
-            padding: 8px 18px;
+            padding: 8px 16px;
             background: var(--fondo);
             border: 2px solid var(--borde);
             color: var(--claro);
@@ -236,136 +169,39 @@
 </head>
 <body>
     <main class="visor">
+
         <h1></h1>
 
-        <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada">
-            <!-- Las viñetas se irán añadiendo solas aquí -->
-        </div>
-
-        <nav class="selector-saltos" aria-label="Saltar entre páginas">
-            <button class="cubito" type="button" aria-label="Saltar a la siguiente página">
-                <img src="favicon.png" alt="Capítulo" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-            </button>
-        </nav>
+            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
 
         <p class="mensaje-comic">este comic esta siendo avanzado de a poco, tenga paciencia :b</p>
         <p>subire una pagina diaria y los findes 2 o 3</p>
         <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
-        
         <script>
             const comic = document.querySelector('#comic-vertical');
-            const selectorSaltos = document.querySelector('.selector-saltos');
-            const cubitoSalto = selectorSaltos.querySelector('.cubito');
+            let numeroPortada = 1;
 
-            let paginasEncontradas = [];
-            let indiceCapituloActual = 0;
+            const cargarPortadas = () => {
+                const imagen = new Image();
+                const nombre = `PORTADA-${numeroPortada}.png`;
 
-            const esInicioDeCapitulo = (nombreArchivo) => {
-                if (!nombreArchivo) return false;
-                return nombreArchivo === 'PORTADA-1.png' || /^\d+PORTADA-\d+\.png$/i.test(nombreArchivo);
-            };
-
-            const esSaltoDeCapitulo = (nombreArchivo) => {
-                const match = /^(?:(\d+))?PORTADA-(\d+)\.png$/i.exec(nombreArchivo);
-                if (!match) return false;
-                const prefijo = match[1];
-                return Boolean(prefijo && Number(prefijo) > 1);
-            };
-
-            const obtenerBloquesDeCapitulo = () => {
-                return [...comic.querySelectorAll('section[data-archivo]')].filter((bloque) => {
-                    const archivo = bloque.dataset.archivo || '';
-                    return esInicioDeCapitulo(archivo);
-                });
-            };
-
-            const mostrarSalto = (archivo, label) => {
-                cubitoSalto.dataset.archivo = archivo;
-                cubitoSalto.dataset.label = label;
-                cubitoSalto.setAttribute('aria-label', `Saltar a ${label}`);
-                selectorSaltos.classList.add('visible');
-            };
-
-            const irAlSiguienteBloque = () => {
-                const bloquesCapitulo = obtenerBloquesDeCapitulo();
-                if (!bloquesCapitulo.length) return;
-
-                indiceCapituloActual = (indiceCapituloActual + 1) % bloquesCapitulo.length;
-                const bloqueDestino = bloquesCapitulo[indiceCapituloActual];
-
-                if (!bloqueDestino) return;
-                bloqueDestino.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                cubitoSalto.dataset.archivo = bloqueDestino.dataset.archivo;
-                cubitoSalto.setAttribute('aria-label', `Saltar a ${bloqueDestino.dataset.archivo}`);
-            };
-
-            cubitoSalto.addEventListener('click', irAlSiguienteBloque);
-
-            // FUNCIÓN DE AUTODESCUBRIMIENTO
-            const explorarCarpeta = (numPagina) => {
-                // El script intentará buscar la imagen sin prefijo, y si falla intentará con los capítulos del 2 al 15
-                const prefijosPosibles = ["", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"];
-                let intentoActual = 0;
-
-                const intentar = () => {
-                    if (intentoActual >= prefijosPosibles.length) {
-                        // Se agotaron los intentos para este número. Significa que ya no hay más páginas en la carpeta.
-                        finalizarCarga();
-                        return;
-                    }
-
-                    const prefijo = prefijosPosibles[intentoActual];
-                    const archivo = `${prefijo}PORTADA-${numPagina}.png`;
-
-                    const img = new Image();
-                    img.onload = () => {
-                        // ¡Bingo! La imagen existe. La añadimos al HTML.
-                        const label = prefijo ? `Capítulo ${prefijo} - Página ${numPagina}` : `Página ${numPagina}`;
-                        paginasEncontradas.push({ archivo, label });
-                        
-                        const bloque = document.createElement('section');
-                        bloque.className = 'comic-vertical';
-                        bloque.setAttribute('aria-label', label);
-                        bloque.dataset.archivo = archivo;
-                        
-                        img.alt = label;
-                        img.loading = 'lazy';
-                        bloque.appendChild(img);
-                        comic.appendChild(bloque);
-
-                        // Como ya encontramos esta página, buscamos inmediatamente el número siguiente.
-                        explorarCarpeta(numPagina + 1);
-                    };
-
-                    img.onerror = () => {
-                        // La imagen con este prefijo no existe, intentamos con el siguiente prefijo de la lista.
-                        intentoActual++;
-                        intentar();
-                    };
-
-                    img.src = archivo;
+                imagen.onload = () => {
+                    imagen.alt = `Viñeta ${numeroPortada} del comic`;
+                    comic.appendChild(imagen);
+                    numeroPortada++;
+                    cargarPortadas();
                 };
 
-                intentar();
-            };
-
-            const finalizarCarga = () => {
-                if (paginasEncontradas.length === 0) {
-                    comic.textContent = 'No hay imagenes del comic todavia.';
-                    selectorSaltos.classList.remove('visible');
-                } else {
-                    const saltoDetectado = paginasEncontradas.some((p) => esSaltoDeCapitulo(p.archivo));
-                    if (saltoDetectado) {
-                        const primerSalto = paginasEncontradas.find((p) => esInicioDeCapitulo(p.archivo));
-                        if (primerSalto) mostrarSalto(primerSalto.archivo, primerSalto.label);
-                    } else {
-                        selectorSaltos.classList.remove('visible');
+                imagen.onerror = () => {
+                    if (numeroPortada === 1) {
+                        comic.textContent = 'No hay imagenes del comic todavia.';
                     }
-                }
+                };
+
+                imagen.src = nombre;
             };
 
-            // Iniciar la búsqueda automática desde la viñeta 1
-            explorarCarpeta(1);
+            cargarPortadas();
         </script>
     </main>
 </body>
