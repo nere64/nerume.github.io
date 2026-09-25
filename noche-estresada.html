@@ -23,7 +23,14 @@
             --borde: #77746f;
         }
 
-        html { scroll-behavior: smooth; }
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: none;
+        }
+
+        html::-webkit-scrollbar {
+            display: none;
+        }
 
         body {
             min-height: 100vh;
