@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+IMAGE_DIR = ROOT / 'NOCHE-IMAGENES'
 OUT = ROOT / 'portadas.json'
 
 PATTERN = re.compile(
@@ -23,7 +24,7 @@ def parse_name(name: str):
     return {'order': order, 'priority': priority}
 
 files = []
-for p in sorted(ROOT.iterdir()):
+for p in sorted(IMAGE_DIR.iterdir()):
     if not p.is_file() or p.suffix.lower() != '.png':
         continue
     base = p.name

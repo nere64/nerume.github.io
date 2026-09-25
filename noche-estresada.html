@@ -143,7 +143,7 @@
             box-shadow: 0 0 0 2px var(--sombra), 8px 8px 0 rgba(13, 11, 10, 0.8);
             cursor: pointer;
             z-index: 20;
-            animation: flotar 2.8s ease-in-out infinite;
+            animation: flotar 6s ease-in-out infinite;
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
@@ -155,10 +155,16 @@
 
         @keyframes flotar {
             0%, 100% {
-                transform: translateY(0);
+                transform: translateY(0) rotate(-3deg);
+            }
+            25% {
+                transform: translateY(-4px) rotate(3deg);
             }
             50% {
-                transform: translateY(-4px);
+                transform: translateY(0) rotate(-3deg);
+            }
+            75% {
+                transform: translateY(-4px) rotate(3deg);
             }
         }
 
@@ -224,6 +230,7 @@
         <script>
             const comic = document.querySelector('#comic-vertical');
             const floatingBtn = document.querySelector('#floating-chapter-btn');
+            const carpetaImagenes = 'NOCHE-IMAGENES/';
             let puntosClave = [];
 
             const parsearPatronPortada = (nombreArchivo) => {
@@ -257,7 +264,7 @@
 
             const detectarArchivosPortada = async () => {
                 try {
-                    const respuesta = await fetch('portadas.json', { cache: 'no-store' });
+                    const respuesta = await fetch('portadas.json', { cache: 'no-cache' });
                     if (!respuesta.ok) {
                         return [];
                     }
@@ -285,16 +292,21 @@
                 titulo.textContent = 'Noche estresada';
                 seccion.appendChild(titulo);
 
-                archivos.forEach((archivo) => {
+                archivos.forEach((archivo, indice) => {
                     const imagen = new Image();
                     const datos = parsearPatronPortada(archivo);
                     imagen.alt = `Noche estresada - ${archivo}`;
+                    imagen.loading = indice === 0 ? 'eager' : 'lazy';
+                    imagen.decoding = 'async';
+                    if (indice === 0) {
+                        imagen.fetchPriority = 'high';
+                    }
                     imagen.dataset.salto = String(datos.tipo === 'salto');
                     imagen.onload = () => {
                         imagen.classList.add('cargada');
                     };
                     imagen.onerror = () => {};
-                    imagen.src = archivo;
+                    imagen.src = `${carpetaImagenes}${archivo}`;
                     seccion.appendChild(imagen);
                 });
 

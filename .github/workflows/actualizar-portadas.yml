@@ -3,7 +3,7 @@ name: Actualizar lista de portadas
 on:
   push:
     paths:
-      - '**.png'
+      - 'NOCHE-IMAGENES/**.png'
       - 'scripts/generate_portadas.py'
       - '.github/workflows/actualizar-portadas.yml'
 
