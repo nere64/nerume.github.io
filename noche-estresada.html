@@ -12,9 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         :root {
             --fondo: #171311;
@@ -24,6 +22,8 @@
             --claro: #cccec7;
             --borde: #77746f;
         }
+
+        html { scroll-behavior: smooth; }
 
         body {
             min-height: 100vh;
@@ -70,17 +70,6 @@
             z-index: 1;
         }
 
-        .barra {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: clamp(14px, 3vw, 26px);
-            padding: 6px 10px;
-            border: 2px solid var(--borde);
-            color: var(--claro);
-            font-size: clamp(1rem, 2.5vw, 1.35rem);
-        }
-
         h1 {
             margin: 0 0 clamp(14px, 3vw, 24px);
             color: var(--claro);
@@ -91,17 +80,38 @@
         }
 
         .comic-vertical {
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: min(100%, 860px);
-            height: auto;
+            min-height: 280px;
             margin: 0 auto;
         }
-        
-            .comic-vertical img {
-                display: block;
-                width: 100%;
-                height: auto;
-            }
+
+        .capitulo {
+            width: 100%;
+            margin-bottom: clamp(18px, 3vw, 28px);
+        }
+
+        .capitulo h2 {
+            margin: 0 0 12px;
+            color: var(--claro);
+            font-size: clamp(1.2rem, 2.6vw, 2rem);
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .comic-vertical img {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            scroll-margin-top: 16px;
+        }
+
+        .floating-chapter-btn:disabled {
+            display: none;
+        }
 
         .mensaje-comic {
             margin: clamp(16px, 3vw, 28px) auto 0;
@@ -109,6 +119,40 @@
             font-size: clamp(1.1rem, 3vw, 1.5rem);
             line-height: 1.2;
             text-align: center;
+        }
+
+        .floating-chapter-btn {
+            position: fixed;
+            right: clamp(12px, 2vw, 22px);
+            bottom: clamp(12px, 2vw, 22px);
+            width: clamp(54px, 7vw, 76px);
+            height: clamp(54px, 7vw, 76px);
+            border: 3px solid var(--borde);
+            border-radius: 0;
+            background-color: var(--fondo);
+            background-image: url('favicon.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 0 2px var(--sombra), 8px 8px 0 rgba(13, 11, 10, 0.8);
+            cursor: pointer;
+            z-index: 20;
+            animation: flotar 2.8s ease-in-out infinite;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .floating-chapter-btn:hover,
+        .floating-chapter-btn:focus-visible {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 0 2px var(--sombra), 10px 10px 0 rgba(13, 11, 10, 0.85);
+        }
+
+        @keyframes flotar {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
         }
 
         .volver {
@@ -153,55 +197,128 @@
         }
 
         @media (max-width: 520px) {
-            body {
-                padding: 12px;
-            }
-
-            .visor {
-                box-shadow: 5px 5px 0 var(--sombra);
-            }
-
-            .barra {
-                flex-wrap: wrap;
-            }
+            body { padding: 12px; }
+            .visor { box-shadow: 5px 5px 0 var(--sombra); }
         }
     </style>
 </head>
 <body>
     <main class="visor">
-
         <h1></h1>
 
-            <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
+        <div id="comic-vertical" class="comic-vertical" aria-label="Comic vertical de Noche estresada"></div>
 
         <p class="mensaje-comic">este comic esta siendo avanzado de a poco, tenga paciencia :b</p>
-        <p>subire una pagina diaria y los findes 2 o 3</p>
+
         <button class="volver" type="button" onclick="window.location.href = 'index.html'">volver</button>
+
+        <button id="floating-chapter-btn" class="floating-chapter-btn" type="button" aria-label="Siguiente punto clave"></button>
+
         <script>
             const comic = document.querySelector('#comic-vertical');
-            let numeroPortada = 1;
+            const floatingBtn = document.querySelector('#floating-chapter-btn');
+            let puntosClave = [];
 
-            const cargarPortadas = () => {
-                const imagen = new Image();
-                const nombre = `PORTADA-${numeroPortada}.png`;
+            const parsearPatronPortada = (nombreArchivo) => {
+                const nombre = String(nombreArchivo).trim();
+                const coincidencia = nombre.match(/^(?:(?:PORTADA)-(\d+)|(?:[A-Z])(?:\d+)?-PORTADA-(\d+))\.png$/i);
 
-                imagen.onload = () => {
-                    imagen.alt = `Viñeta ${numeroPortada} del comic`;
-                    comic.appendChild(imagen);
-                    numeroPortada++;
-                    cargarPortadas();
+                if (!coincidencia) {
+                    return null;
+                }
+
+                const esSalto = coincidencia[2] !== undefined;
+                return {
+                    orden: Number(coincidencia[1] || coincidencia[2]),
+                    prioridad: esSalto ? 1 : 0,
+                    tipo: esSalto ? 'salto' : 'normal'
                 };
-
-                imagen.onerror = () => {
-                    if (numeroPortada === 1) {
-                        comic.textContent = 'No hay imagenes del comic todavia.';
-                    }
-                };
-
-                imagen.src = nombre;
             };
 
-            cargarPortadas();
+            const ordenarArchivos = (archivos) => {
+                return [...archivos]
+                    .map((archivo) => ({ archivo, datos: parsearPatronPortada(archivo) }))
+                    .filter((item) => item.datos)
+                    .sort((a, b) => {
+                        const pa = a.datos;
+                        const pb = b.datos;
+
+                        return pa.orden - pb.orden || pa.prioridad - pb.prioridad;
+                    })
+                    .map((item) => item.archivo);
+            };
+
+            const detectarArchivosPortada = async () => {
+                try {
+                    const respuesta = await fetch('portadas.json', { cache: 'no-store' });
+                    if (!respuesta.ok) {
+                        return [];
+                    }
+
+                    const datos = await respuesta.json();
+                    const archivos = Array.isArray(datos) ? datos : [];
+                    return archivos.filter((archivo) => parsearPatronPortada(archivo));
+                } catch (error) {
+                    return [];
+                }
+            };
+
+            const construirComic = async () => {
+                const archivos = ordenarArchivos(await detectarArchivosPortada());
+
+                if (!archivos.length) {
+                    return;
+                }
+
+                const seccion = document.createElement('section');
+                seccion.className = 'capitulo';
+                seccion.id = 'introduccion';
+
+                const titulo = document.createElement('h2');
+                titulo.textContent = 'Noche estresada';
+                seccion.appendChild(titulo);
+
+                archivos.forEach((archivo) => {
+                    const imagen = new Image();
+                    const datos = parsearPatronPortada(archivo);
+                    imagen.alt = `Noche estresada - ${archivo}`;
+                    imagen.dataset.salto = String(datos.tipo === 'salto');
+                    imagen.onload = () => {
+                        imagen.classList.add('cargada');
+                    };
+                    imagen.onerror = () => {};
+                    imagen.src = archivo;
+                    seccion.appendChild(imagen);
+                });
+
+                comic.appendChild(seccion);
+                puntosClave = [...seccion.querySelectorAll('img[data-salto="true"]')];
+                floatingBtn.disabled = puntosClave.length === 0;
+            };
+
+            const moverAlSiguientePunto = () => {
+                if (!puntosClave.length) return;
+
+                const estaEnElFondo = window.innerHeight + window.scrollY >= document.body.scrollHeight - 24;
+                if (estaEnElFondo) {
+                    puntosClave[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return;
+                }
+
+                const siguiente = puntosClave.find((punto) => punto.getBoundingClientRect().top > 120);
+                if (siguiente) {
+                    siguiente.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    return;
+                }
+
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            };
+
+            floatingBtn.addEventListener('click', () => {
+                moverAlSiguientePunto();
+            });
+
+            construirComic();
         </script>
     </main>
 </body>
